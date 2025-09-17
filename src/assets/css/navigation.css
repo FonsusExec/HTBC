@@ -1,0 +1,63 @@
+/* Container for the navigation bar */
+.navbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(255, 255, 255, 0.2); /* Transparent white background */
+    z-index: 10;
+}
+
+/* Logo styling with image */
+.logo img {
+    height: 109px;
+    width: auto;
+    margin-left: 40px;
+}
+
+/* Navigation links */
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: #d3d3d3;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 5px 10px;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: #efbf04;
+}
+
+.nav-links a.active {
+    color: #efbf04; /* Match hover color for active state */
+    font-weight: bold; /* Bold text for active link */
+    border-bottom: 2px solid #efbf04; /* Underline for active state */
+}
+
+/* Login button styling */
+.login-btn {
+    background-color: #efbf04;
+    color: #000;
+    padding: 20px 80px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-right: 40px;
+    margin-bottom: 5px;
+    text-decoration: none; /* Remove underline from anchor */
+    display: inline-block;
+}
+
+.login-btn:hover {
+    background-color: #ffd700;
+}

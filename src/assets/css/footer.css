@@ -1,0 +1,126 @@
+.contact-container {
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 50px;
+    background-color: #1a1a1a;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.contact-title {
+    font-size: 2em;
+    color: #ffd700;
+    margin-bottom: 20px;
+}
+
+.contact-form {
+    flex: 1;
+}
+
+.contact-form .input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.contact-form input[type="text"],
+.contact-form input[type="email"] {
+    flex: 1;
+    padding: 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #000;
+    outline: none;
+}
+
+.contact-form textarea {
+    width: 95.5%;
+    padding: 20px;
+    margin-bottom: 10px;
+    border-style: none;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #000;
+    resize: vertical;
+    min-height: 100px;
+    outline: none;
+}
+
+.contact-form .newsletter-label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    color: #fff;
+}
+
+.contact-form .newsletter-label input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.contact-form button {
+    width: 100%;
+    padding: 20px 69px;
+    background-color: #ffcc00;
+    border: none;
+    border-radius: 5px;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.contact-form button:hover {
+    background-color: #e6b800;
+}
+
+.contact-info {
+    flex: 1;
+    text-align: right;
+    padding-left: 20px;
+}
+
+.contact-info .social-icons {
+    margin-top: 30px;
+}
+
+.contact-info .social-icons a {
+    margin-left: 10px;
+    display: inline-block;
+}
+
+.contact-info .social-icons img {
+    width: 50px; /* Adjust based on your image sizes */
+    height: auto;
+    transition: transform 0.3s ease;
+}
+
+.contact-info .social-icons a:hover img {
+    transform: scale(1.1);
+}
+
+.contact-info .contact-step {
+    margin-bottom: 15px;
+}
+
+.contact-info .contact-step p {
+    font-size: 0.9em;
+    margin: 20px 0;
+    color: #fff;
+    font-weight: bold;
+}
+
+.contact-info .contact-step .label {
+    color: #fff;
+    font-weight: lighter;
+    font-size: 0.7em;
+}
+
+.social-icon {
+    width: 30px; /* Adjust based on your image sizes */
+    height: auto;
+    transition: transform 0.3s ease;
+    background-color: #fff;
+}
