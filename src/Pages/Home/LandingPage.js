@@ -1,9 +1,43 @@
 import React from "react";
 import "../Home/landingPage.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faAngleLeft, faAngleRight, faFacebookF, faTwitter, faInstagram} from "@fortawesome/free-solid-svg-icons";
+import {faAngleLeft, faAngleRight} from "@fortawesome/free-solid-svg-icons";
+import {Link} from "react-router-dom";
+import axios from "axios";
+import logger from "use-reducer-logger";
+
+const reducer = (state, action) => {
+    switch (action.type) {
+        case "FETCH_REQUEST":
+            return {...state, loading: true};
+        case "FETCH_SUCCESS":
+            return {...state, loading: false, products: action.payload};
+        case "FETCH_FAIL":
+            return {...state, loading: false, error: action.payload};
+        default:
+            return state;
+    }
+};
 
 export default function LandingPage() {
+    const [{loading, products, error}, dispatch] = React.useReducer(logger(reducer), {
+        loading: true,
+        products: [],
+        error: "",
+    });
+    React.useEffect(() => {
+        const fetchData = async () => {
+            dispatch({type: "FETCH_REQUEST"});
+            try {
+                const result = await axios.get("/api/products");
+                dispatch({type: "FETCH_SUCCESS", payload: result.data});
+            } catch (error) {
+                dispatch({type: "FETCH_FAIL", payload: error.message});
+            }
+        };
+        fetchData();
+    }, []);
+
     const resources = [
         {icon: require("../../assets/img/htbc-doc1.webp"), title: "Liturgical Calendar"},
         {icon: require("../../assets/img/htbc-doc1.webp"), title: "Catechism Summary Guide.pdf"},
@@ -129,6 +163,7 @@ export default function LandingPage() {
                         <div className="title">Shop</div>
                         <div className="header-content">
                             <h2>Discover Our Featured Products</h2>
+
                             <div className="cart-badge">
                                 <p>0</p>
                                 <img src={require("../../assets/img/htbc-cart.png")} alt="Cart" />
@@ -141,38 +176,24 @@ export default function LandingPage() {
                         </div>
                     </div>
                     <div className="shop-grid">
-                        <div className="product-item">
-                            <img src={require("../../assets/img/htbc-shop1.png")} alt="Rosary" />
-                            <h3>Rosary</h3>
-                            <div className="price-and-cart">
-                                <div className="price">$25</div>
-                                <button className="add-to-cart">Add to Cart</button>
-                            </div>
-                        </div>
-                        <div className="product-item">
-                            <img src={require("../../assets/img/htbc-shop2.png")} alt="Crucifix Necklace" />
-                            <h3>Crucifix Necklace</h3>
-                            <div className="price-and-cart">
-                                <div className="price">$18</div>
-                                <button className="add-to-cart">Add to Cart</button>
-                            </div>
-                        </div>
-                        <div className="product-item">
-                            <img src={require("../../assets/img/htbc-shop3.png")} alt="Devotional Candle" />
-                            <h3>Devotional Candle</h3>
-                            <div className="price-and-cart">
-                                <div className="price">$8</div>
-                                <button className="add-to-cart">Add to Cart</button>
-                            </div>
-                        </div>
-                        <div className="product-item">
-                            <img src={require("../../assets/img/htbc-shop4.png")} alt="Daily Missal" />
-                            <h3>Daily Missal</h3>
-                            <div className="price-and-cart">
-                                <div className="price">$23</div>
-                                <button className="add-to-cart">Add to Cart</button>
-                            </div>
-                        </div>
+                        {loading ? (
+                            <div>Loading...</div>
+                        ) : error ? (
+                            <div>{error}</div>
+                        ) : (
+                            products.map((product) => (
+                                <div className="product-item" key={product.htbc}>
+                                    <img src={require(`../../assets${product.image}`)} alt={product.htbc} />
+                                    <Link to={`/product/${product.htbc}`} className="product-name" style={{textDecoration: "none", color: "black"}}>
+                                        <h3>{product.name}</h3>
+                                    </Link>
+                                    <div className="price-and-cart">
+                                        <div className="price">${product.price}</div>
+                                        <button className="add-to-cart">Add to Cart</button>
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
 

@@ -1,18 +1,32 @@
-import React from "react";
+import React, {useState} from "react";
 // import backgroundImage from "../assets/img/htbc-login.png";
 import "../LoginPage/loginPage.css";
 import {Link} from "react-router-dom";
+import {Axios} from "axios";
 
 export default function LoginPage() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const submitHandler = async (e) => {
+        e.preventDefault();
+        try {
+            const data = await Axios.post("/api/users/signup", {
+                email,
+                password,
+            });
+        } catch (err) {}
+    };
+
     return (
         <div className="login-container">
             <div className="login-form">
                 <h2>Login</h2>
-                <form>
+                <form className="form" onSubmit={submitHandler}>
                     {/* <label htmlFor="email">Email Address</label> */}
-                    <input type="email" placeholder="Email Address" />
+                    <input type="email" required placeholder="Email Address" onChange={(e) => setEmail(e.target.value)} />
                     {/* <label htmlFor="password">Password</label> */}
-                    <input type="password" placeholder="Password" />
+                    <input type="password" required placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
                     <div className="remember-me">
                         <div>
                             <input type="checkbox" id="remember" />

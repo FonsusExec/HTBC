@@ -1,8 +1,8 @@
 import e from "express";
-import User from "../models/userModel";
+import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import expressAsyncHandler from "express-async-handler";
-import {generateToken} from "../utils";
+import {generateToken} from "../utils.js";
 
 const userRouter = e.Router();
 
@@ -24,7 +24,7 @@ userRouter.post(
             },
         });
 
-        res.status(401).send({message: "Invalid email or password"});
+        res.status(401).send({message: "Invalid email or password Mr Fonsus"});
     })
 );
 

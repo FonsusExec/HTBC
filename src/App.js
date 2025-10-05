@@ -5,6 +5,7 @@ import {Layout} from "./Global/Layout";
 import LandingPage from "./Pages/Home/LandingPage";
 import LoginPage from "./Pages/LoginPage/LoginPage";
 import CreateAccount from "./Pages/CreateAccount/CreateAccount";
+import ProductScreen from "./Pages/ProductPage/ProductScreen";
 
 function App() {
     return (
@@ -15,8 +16,7 @@ function App() {
                         <Route index element={<LandingPage />} />
                         <Route path="login" element={<LoginPage />} />
                         <Route path="create-account" element={<CreateAccount />} />
-                        {/* Add other routes as needed */}
-                        {/* Example: <Route path="about" element={<About />} /> */}
+                        <Route path="product/:htbc" element={<ProductScreen />} />
                         <Route path="*" element={<div>404 Not Found</div>} />
                     </Route>
                 </Routes>
