@@ -2,9 +2,10 @@ import React from "react";
 import "../Home/landingPage.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAngleLeft, faAngleRight} from "@fortawesome/free-solid-svg-icons";
-import {Link} from "react-router-dom";
+// import {Link} from "react-router-dom";
 import axios from "axios";
 import logger from "use-reducer-logger";
+import Product from "../../components/Product";
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -175,26 +176,7 @@ export default function LandingPage() {
                             </a>
                         </div>
                     </div>
-                    <div className="shop-grid">
-                        {loading ? (
-                            <div>Loading...</div>
-                        ) : error ? (
-                            <div>{error}</div>
-                        ) : (
-                            products.map((product) => (
-                                <div className="product-item" key={product.htbc}>
-                                    <img src={require(`../../assets${product.image}`)} alt={product.htbc} />
-                                    <Link to={`/product/${product.htbc}`} className="product-name" style={{textDecoration: "none", color: "black"}}>
-                                        <h3>{product.name}</h3>
-                                    </Link>
-                                    <div className="price-and-cart">
-                                        <div className="price">${product.price}</div>
-                                        <button className="add-to-cart">Add to Cart</button>
-                                    </div>
-                                </div>
-                            ))
-                        )}
-                    </div>
+                    <div className="shop-grid">{loading ? <div>Loading...</div> : error ? <div>{error}</div> : products.map((product) => <Product key={product.htbc} product={product} />)}</div>
                 </div>
 
                 <div className="resources-container">
