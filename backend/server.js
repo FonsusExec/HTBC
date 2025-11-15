@@ -25,6 +25,16 @@ app.get("/api/products", (req, res) => {
     res.send(data.products);
 });
 
+app.get("/api/products/htbc/:htbc", (req, res) => {
+    const htbc = req.params.htbc;
+    const product = data.products.find((x) => x.htbc === htbc);
+    if (product) {
+        res.send(product);
+    } else {
+        res.status(404).send({message: "Product not found"});
+    }
+});
+
 app.use((err, req, res, next) => {
     res.status(500).send({message: err.message});
 });

@@ -1,6 +1,7 @@
 const data = {
     products: [
         {
+            _id: "1",
             name: "Roasary",
             htbc: "htbc-roasary",
             image: "/img/htbc-shop1.png",
@@ -8,6 +9,7 @@ const data = {
             description: "A popular Roasary for prayers and meditation",
         },
         {
+            _id: "2",
             name: "Crucifix Necklace",
             htbc: "htbc-crucifix-necklace",
             image: "/img/htbc-shop2.png",
@@ -15,6 +17,7 @@ const data = {
             description: "Popular Crucifix Necklace for prayers and meditation",
         },
         {
+            _id: "3",
             name: "Devotional Candle",
             htbc: "htbc-devotional-candle",
             image: "/img/htbc-shop3.png",
@@ -22,6 +25,7 @@ const data = {
             description: "Devotional Candle for prayers and meditation",
         },
         {
+            _id: "4",
             name: "Daily Missal",
             htbc: "htbc-daily-missal",
             image: "/img/htbc-shop4.png",

@@ -6,6 +6,7 @@ import LandingPage from "./Pages/Home/LandingPage";
 import LoginPage from "./Pages/LoginPage/LoginPage";
 import CreateAccount from "./Pages/CreateAccount/CreateAccount";
 import ProductScreen from "./Pages/ProductPage/ProductScreen";
+import CartScreen from "./Pages/CartScreen/CartScreen";
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                         <Route path="login" element={<LoginPage />} />
                         <Route path="create-account" element={<CreateAccount />} />
                         <Route path="product/:htbc" element={<ProductScreen />} />
+                        <Route path="cart" element={<CartScreen />} />
                         <Route path="*" element={<div>404 Not Found</div>} />
                     </Route>
                 </Routes>

@@ -3,15 +3,17 @@
 .product-page-container {
     background: url("../../assets/img/htba-background.jpg") no-repeat center center;
     background-size: cover;
-    padding: 40px;
+    padding: 40px 0;
 }
 .product-page {
-    max-width: 2800px;
+    /* max-width: 2900px; */
     margin: 0 auto;
     background-color: #fff;
     padding: 20px;
     margin-top: 73px;
-    width: 100%;
+    /* margin-left: -2%; */
+    /* width: 102%; */
+    margin-bottom: -50px;
 }
 
 .header {
@@ -23,11 +25,18 @@
 }
 
 .nav-btn {
-    background: none;
+    background-color: whitesmoke;
+    padding: 20px 30px;
     border: none;
     color: #666;
     font-size: 14px;
     cursor: pointer;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.arrow-icon {
+    color: #666;
 }
 
 .header-right {
@@ -36,24 +45,10 @@
     gap: 15px;
 }
 
-.search-input {
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 200px;
-}
-
-.icon-btn {
-    background: none;
-    border: none;
-    color: #666;
-    font-size: 14px;
-    cursor: pointer;
-}
-
 .product-content {
     display: flex;
     gap: 40px;
+    align-items: center;
 }
 
 .product-images {
@@ -62,20 +57,30 @@
 }
 
 .main-image {
-    width: 100%;
-    height: 400px;
+    flex: 1;
+    height: 400px; /* Fixed height for consistency; adjust as needed for your design */
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
+    position: relative; /* Allows for better control if needed */
+    overflow: hidden; /* Prevents any overflow from cropped images */
+    border-radius: 8px; /* Matches yellow-border radius */
 }
 
 .main-image img {
     max-width: 100%;
     max-height: 100%;
-    object-fit: contain;
+    width: auto; /* Allows natural width scaling */
+    height: auto; /* Allows natural height scaling */
+    object-fit: contain; /* Scales to fit container while preserving aspect ratio; use 'cover' if you want to fill and crop */
+    object-position: center; /* Centers the image within the container */
+    transition: transform 0.2s ease; /* Optional: subtle zoom on hover */
 }
 
+.main-image:hover img {
+    transform: scale(1.05); /* Optional: slight zoom effect on hover for interactivity */
+}
 .yellow-border {
     border: 3px solid #ffd700;
     border-radius: 8px;
@@ -95,10 +100,57 @@
     cursor: pointer;
 }
 
+.order-btn {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative; /* Establishes positioning context if needed */
+}
+
+.header-right p {
+    position: absolute;
+    top: 62%;
+    left: 6%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    color: black;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 5; /* Ensures it appears on top of the image */
+}
+
+.header-right img {
+    position: relative; /* Allows the absolute p to overlay relative to the nearest ancestor, but since p is sibling, it overlays on the flex container */
+    width: 25px; /* Adjust image size as needed */
+    height: 25px;
+    /* z-index: 1; */
+}
+
+.header-right h2 {
+    font-size: 14px;
+    color: #333;
+    font-weight: lighter;
+    margin: 0;
+    z-index: 1;
+}
+
 .product-details {
     flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
 }
 
 .product-title {
@@ -139,17 +191,21 @@
 }
 
 .buy-now-btn {
-    background-color: #ffd700;
+    background-color: #ffcc00;
     color: #333;
     border: none;
-    padding: 15px 30px;
     font-size: 16px;
     font-weight: bold;
     border-radius: 4px;
     cursor: pointer;
     margin-bottom: 20px;
+    padding: 22px 50px;
     width: 200px;
     align-self: flex-start;
+}
+
+.buy-now-btn:hover {
+    background-color: #e6b800; /* Darker yellow on button hover */
 }
 
 .quantity-section {
@@ -168,7 +224,7 @@
 .quantity-controls {
     display: flex;
     align-items: center;
-    border: 1px solid #ddd;
+    border: 2px solid #333;
     border-radius: 4px;
     overflow: hidden;
 }
@@ -191,7 +247,7 @@
 
 .qty-input {
     border: none;
-    width: 50px;
+    /* width: 50px; */
     height: 28px;
     text-align: center;
     font-size: 16px;
@@ -200,8 +256,8 @@
 .add-to-cart-btn {
     background-color: #fff;
     color: #333;
-    border: 1px solid #ddd;
-    padding: 15px 30px;
+    border: 2px solid #333;
+    padding: 20px 50px;
     font-size: 16px;
     border-radius: 4px;
     cursor: pointer;
@@ -213,10 +269,22 @@
     background-color: #f5f5f5;
 }
 
+.action-buttons {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.buy-now-btn {
+    margin-right: 25px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .product-content {
         flex-direction: column;
+    }
+    .main-image {
+        height: 300px; /* Reduce height on mobile for better fit */
     }
 
     .header-right {
