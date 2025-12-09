@@ -2,15 +2,18 @@
 
 /* General Container */
 .cart-page-container {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    min-height: 100vh;
+    background: url("../../assets/img/htba-background.jpg") no-repeat center center;
+    background-size: cover;
+    padding: 40px 0;
 }
 
 .cart-page {
-    max-width: 1200px;
     margin: 0 auto;
+    background-color: #fff;
     padding: 20px;
+    margin-top: 73px;
+    margin-bottom: -60px;
+    height: 48vh;
 }
 
 /* Header */
@@ -20,7 +23,6 @@
     align-items: center;
     margin-bottom: 30px;
     padding: 10px 0;
-    border-bottom: 1px solid #ddd;
 }
 
 .nav-btn {
@@ -31,6 +33,7 @@
     cursor: pointer;
     display: flex;
     align-items: center;
+    margin-left: -28px;
 }
 
 .arrow-icon {
@@ -100,7 +103,12 @@
 /* Empty Cart */
 .empty-cart {
     text-align: center;
-    padding: 50px;
+    padding: 50px 20px;
+    margin: 0 auto;
+    background-color: #fff;
+    height: 300px;
+    margin-top: 73px;
+    margin-bottom: -2%;
 }
 
 .empty-cart h2 {
@@ -160,8 +168,8 @@
 }
 
 .item-image {
-    width: 50px;
-    height: 50px;
+    width: 150px;
+    height: 150px;
     object-fit: cover;
     border-radius: 4px;
 }
@@ -184,7 +192,7 @@
     background: #dc3545;
     color: white;
     border: none;
-    padding: 5px 10px;
+    padding: 20px 50px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 12px;

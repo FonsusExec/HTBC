@@ -11,11 +11,13 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@paypal/checkout-server-sdk": "^1.0.3",
         "bcryptjs": "^3.0.2",
         "cors": "^2.8.5",
         "express": "^5.1.0",
         "express-async-handler": "^1.2.0",
-        "jsonwebtoken": "^9.0.2"
+        "jsonwebtoken": "^9.0.2",
+        "stripe": "^20.0.0"
     },
     "devDependencies": {
         "nodemon": "^3.1.10"

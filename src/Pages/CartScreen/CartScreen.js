@@ -1,50 +1,27 @@
 import React, {useState, useEffect} from "react";
 import {toast, ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {useNavigate} from "react-router-dom"; // Assuming navigation is needed, but optional for this component
-import "../CartScreen/cartScreen.css"; // Assuming a new CSS file for cart
+import {useNavigate} from "react-router-dom";
+import "../CartScreen/cartScreen.css";
+import {useCart} from "../../CartContext";
 
 export default function CartScreen() {
-    const [cart, setCart] = useState(() => {
-        return JSON.parse(localStorage.getItem("cart")) || [];
-    });
+    const {cart, removeFromCart, getCartCount, getCartTotal, clearCart} = useCart();
+    const cartItemsCount = getCartCount();
+    const cartItemsPrice = getCartTotal();
 
-    // Update localStorage whenever cart changes
-    useEffect(() => {
-        localStorage.setItem("cart", JSON.stringify(cart));
-    }, [cart]);
-
-    const navigate = useNavigate(); // Optional, for navigation
-
-    const removeFromCart = (id) => {
-        setCart((prevCart) => prevCart.filter((x) => x._id !== id));
-        toast.info("Item removed from cart!", {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-        });
+    const navigate = useNavigate();
+    const handleRemoveFromCart = (id) => {
+        removeFromCart(id);
+        toast.info("Item removed from cart!");
     };
-
-    const cartItemsCount = cart.reduce((total, item) => total + item.qty, 0);
-    const cartItemsPrice = cart.reduce((total, item) => total + item.price * item.qty, 0);
 
     const continueToCheckout = () => {
         if (cartItemsCount === 0) {
-            toast.error("Your cart is empty!", {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            toast.error("Your cart is empty!");
             return;
         }
-        // Navigate to checkout or handle checkout logic
-        navigate("/checkout"); // Example navigation
+        navigate("/checkout");
     };
 
     const continueShopping = () => {
@@ -75,16 +52,15 @@ export default function CartScreen() {
                         Continue Shopping
                     </button>
                     <div className="header-right">
-                        <div className="search-icon">🔍</div> {/* Placeholder for search */}
                         <div className="cart-header">
                             <p>{cartItemsCount}</p>
                             <img src={require("../../assets/img/htbc-cart.png")} alt="Cart" />
                             <h2>My Cart</h2>
                         </div>
-                        <div className="order-btn">
+                        {/* <div className="order-btn">
                             <img className="icon-btn" src={require("../../assets/img/htbc-orderLogo.png")} alt="My Order" />
                             <h2>My Order</h2>
-                        </div>
+                        </div> */}
                     </div>
                 </header>
 
@@ -107,7 +83,7 @@ export default function CartScreen() {
                                         ${item.price} x {item.qty}
                                     </div>
                                     <div className="item-action">
-                                        <button className="remove-btn" onClick={() => removeFromCart(item._id)}>
+                                        <button className="remove-btn" onClick={() => handleRemoveFromCart(item._id)}>
                                             Remove Item
                                         </button>
                                     </div>
@@ -139,9 +115,9 @@ export default function CartScreen() {
                             Continue to Checkout
                         </button>
                         <div className="payment-options">
-                            <img src="https://via.placeholder.com/50x30/003087/ffffff?text=PayPal" alt="PayPal" className="payment-icon" />
-                            <img src="https://via.placeholder.com/50x30/000000/ffffff?text=Apple+Pay" alt="Apple Pay" className="payment-icon" />
-                            <img src="https://via.placeholder.com/50x30/635bff/ffffff?text=Stripe" alt="Stripe" className="payment-icon" />
+                            <img src={require("../../assets/img/paypalLogo.png")} alt="PayPal" className="payment-icon" />
+                            <img src={require("../../assets/img/applepayLogo.png")} alt="Apple Pay" className="payment-icon" />
+                            <img src={require("../../assets/img/stripeLogo.png")} alt="Stripe" className="payment-icon" />
                         </div>
                     </div>
                 </div>

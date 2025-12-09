@@ -9,6 +9,8 @@
 # testing
 /coverage
 
+CheckOutPage/CheckOut.js
+
 # production
 /build
 
