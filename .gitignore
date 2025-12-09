@@ -11,6 +11,8 @@
 
 CheckOutPage/CheckOut.js
 
+backend/server.js
+
 # production
 /build
 
