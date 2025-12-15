@@ -262,6 +262,148 @@
     background: #e0a800;
 }
 
+/* Add to checkOut.css for Embedded Payment Info Styles */
+.embedded-payment-info {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.embedded-payment-info label {
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.payment-methods {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.payment-option:hover {
+    background: #f0f0f0;
+}
+
+.payment-logo {
+    width: 60px;
+    height: 30px;
+    object-fit: contain;
+}
+
+/* Modal Styles (unchanged) */
+.payment-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.payment-modal {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.modal-header h3 {
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+}
+
+.modal-body {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.apple-pay-section {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.apple-pay-btn {
+    background: -apple-pay-button-green; /* Native Apple style (requires domain verification) */
+    color: #000;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    min-height: 44px; /* Apple guideline */
+    width: 200px;
+}
+
+.apple-pay-btn:hover {
+    background: -apple-pay-button-green; /* No hover change for native feel */
+}
+
+.apple-pay-placeholder {
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    color: #666;
+}
+
+.fallback-btn {
+    background: #efbf04;
+    color: #000;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.fallback-btn:hover {
+    background: #ffd700;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .checkout-content {
+        flex-direction: column;
+    }
+
+    .payment-methods {
+        justify-content: center;
+    }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .checkout-content {

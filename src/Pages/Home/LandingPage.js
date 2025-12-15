@@ -4,7 +4,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAngleLeft, faAngleRight} from "@fortawesome/free-solid-svg-icons";
 // import {Link} from "react-router-dom";
 import axios from "axios";
-import logger from "use-reducer-logger";
+// import logger from "use-reducer-logger";
 import Product from "../../components/Product";
 
 const reducer = (state, action) => {
@@ -21,11 +21,12 @@ const reducer = (state, action) => {
 };
 
 export default function LandingPage() {
-    const [{loading, products, error}, dispatch] = React.useReducer(logger(reducer), {
+    const [{loading, products, error}, dispatch] = React.useReducer(reducer, {
         loading: true,
         products: [],
         error: "",
     });
+
     React.useEffect(() => {
         const fetchData = async () => {
             dispatch({type: "FETCH_REQUEST"});

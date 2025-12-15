@@ -115,7 +115,7 @@ export default function CartScreen() {
                             Continue to Checkout
                         </button>
                         <div className="payment-options">
-                            <img src={require("../../assets/img/paypalLogo.png")} alt="PayPal" className="payment-icon" />
+                            {/* <img src={require("../../assets/img/paypalLogo.png")} alt="PayPal" className="payment-icon" /> */}
                             <img src={require("../../assets/img/applepayLogo.png")} alt="Apple Pay" className="payment-icon" />
                             <img src={require("../../assets/img/stripeLogo.png")} alt="Stripe" className="payment-icon" />
                         </div>

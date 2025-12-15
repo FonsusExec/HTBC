@@ -1,0 +1,195 @@
+/* paymentSuccess.css - Enhanced for Order Confirmation (Builds on Your Existing Styles) */
+.payment-page-container {
+    background: url("../../assets/img/htba-background.jpg") no-repeat center center;
+    background-size: cover;
+    padding: 40px 0;
+    /* min-height: 100vh; */
+}
+
+.payment-page {
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    margin-top: 73px;
+    margin-bottom: -50px;
+    /* max-width: 1200px; */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Header - Green Success Theme */
+.confirmation-header {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+.confirmation-header h1 {
+    margin: 0 0 10px 0;
+    font-size: 2.5em;
+    font-weight: 700;
+}
+
+.confirmation-header p {
+    margin: 0;
+    font-size: 1.2em;
+    opacity: 0.95;
+}
+
+/* Content Grid - Matches Previous Flex/Grid */
+.confirmation-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 30px;
+}
+
+.confirmation-summary,
+.confirmation-shipping,
+.confirmation-payment {
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 20px;
+    background: #f8f9fa;
+}
+
+.confirmation-summary h2 {
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+}
+
+.summary-items {
+    margin-bottom: 20px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+}
+
+.summary-totals {
+    margin-top: 10px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    font-size: 14px;
+}
+
+.total-row.bold {
+    font-weight: bold;
+    font-size: 16px;
+    border-top: 2px solid #dee2e6;
+    padding-top: 10px;
+    color: #28a745;
+}
+
+/* Actions - Matches Your Button Styles */
+.confirmation-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 30px;
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+.confirmation-actions button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.confirmation-actions button:hover {
+    transform: translateY(-1px);
+}
+
+.continue-shopping-button {
+    background: #ffc107;
+    color: #333;
+}
+
+.view-orders-button {
+    background: #007bff;
+    color: white;
+}
+
+.print-button {
+    background: #6c757d;
+    color: white;
+}
+
+/* Loading/Error - Matches Previous */
+.loading-container,
+.error-container {
+    textalign: "center";
+    padding: 50px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin: 20px;
+}
+
+.loading-container h2 {
+    color: #007bff;
+}
+
+.error-container h2 {
+    color: #dc3545;
+}
+
+/* Responsive - Matches Previous */
+@media (max-width: 768px) {
+    .confirmation-content {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .confirmation-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .payment-page {
+        margin-top: 0;
+        padding: 10px;
+    }
+
+    .confirmation-header {
+        padding: 20px;
+    }
+
+    .confirmation-header h1 {
+        font-size: 2em;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .confirmation-actions {
+        display: none;
+    }
+
+    .payment-page-container {
+        background: none;
+    }
+
+    .confirmation-header {
+        background: #28a745 !important;
+        -webkit-print-color-adjust: exact;
+    }
+}

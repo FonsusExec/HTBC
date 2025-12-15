@@ -1,0 +1,169 @@
+.orders-page {
+    background: url("../../assets/img/htba-background.jpg") no-repeat center center;
+    background-size: cover;
+    padding: 40px 0;
+    min-height: 400px;
+}
+
+.orders-container {
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    margin-top: 73px;
+    margin-bottom: -50px;
+    /* margin-bottom: 20px; Changed from -50px to positive spacing—prevents overlap */
+    /* height: 500px; */
+}
+
+.orders-page h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.orders-loading,
+.orders-error {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+    color: #666;
+}
+
+.orders-error {
+    color: #dc3545;
+}
+
+.table-container {
+    width: 100%;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow-x: auto;
+    scrollbar-width: auto;
+    max-height: 400px;
+}
+
+.table-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden;
+    min-width: 900px;
+    table-layout: fixed;
+}
+
+.orders-table th,
+.orders-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.orders-table th:nth-child(1),
+.orders-table td:nth-child(1) {
+    width: 250px;
+}
+.orders-table th:nth-child(2),
+.orders-table td:nth-child(2) {
+    width: 100px;
+}
+.orders-table th:nth-child(3),
+.orders-table td:nth-child(3) {
+    width: 100px;
+}
+.orders-table th:nth-child(4),
+.orders-table td:nth-child(4) {
+    width: 100px;
+}
+.orders-table th:nth-child(5),
+.orders-table td:nth-child(5) {
+    width: 80px;
+}
+.orders-table th:nth-child(6),
+.orders-table td:nth-child(6) {
+    width: 120px;
+}
+
+.orders-table th {
+    background: #f8f9fa;
+    font-weight: bold;
+    color: #333;
+}
+
+.orders-table tr:hover {
+    background: #f8f9fa;
+}
+
+.status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status.confirmed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status.pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.view-details-btn {
+    background: #efbf04;
+    color: #000;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+    white-space: nowrap; /* Ensure button doesn't wrap */
+}
+
+.view-details-btn:hover {
+    background: #ffd700;
+}
+
+@media (max-width: 768px) {
+    .orders-table {
+        font-size: 14px;
+        min-width: 700px;
+    }
+    .orders-table th,
+    .orders-table td {
+        padding: 8px;
+        white-space: normal;
+    }
+    .orders-table th:nth-child(1),
+    .orders-table td:nth-child(1) {
+        width: 200px;
+    }
+    .table-container::-webkit-scrollbar {
+        height: 6px;
+    }
+}

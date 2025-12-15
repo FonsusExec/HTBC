@@ -7,6 +7,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    box-sizing: border-box; /* Ensures padding doesn't add extra width */
 }
 
 .contact-title {
@@ -23,21 +24,23 @@
     display: flex;
     gap: 10px;
     margin-bottom: 10px;
+    flex-wrap: wrap; /* Allows inputs to wrap on small screens */
 }
 
 .contact-form input[type="text"],
 .contact-form input[type="email"] {
-    flex: 1;
+    flex: 1 1 200px; /* Grow/shrink, min 200px */
     padding: 20px;
     border: none;
     border-radius: 5px;
     background-color: #fff;
     color: #000;
     outline: none;
+    box-sizing: border-box;
 }
 
 .contact-form textarea {
-    width: 95.5%;
+    width: 100%; /* Full width, responsive */
     padding: 20px;
     margin-bottom: 10px;
     border-style: none;
@@ -47,6 +50,7 @@
     resize: vertical;
     min-height: 100px;
     outline: none;
+    box-sizing: border-box;
 }
 
 .contact-form .newsletter-label {
@@ -63,13 +67,14 @@
 
 .contact-form button {
     width: 100%;
-    padding: 20px 69px;
+    padding: 20px; /* Removed fixed horizontal padding for flexibility */
     background-color: #ffcc00;
     border: none;
     border-radius: 5px;
     color: #000;
     font-weight: bold;
     cursor: pointer;
+    box-sizing: border-box;
 }
 
 .contact-form button:hover {
@@ -123,4 +128,73 @@
     height: auto;
     transition: transform 0.3s ease;
     background-color: #fff;
+}
+
+/* New: Media Queries for Responsiveness */
+@media (max-width: 1024px) {
+    .contact-container {
+        padding: 30px; /* Reduce padding on tablets */
+        flex-direction: column; /* Stack form and info vertically */
+        align-items: center;
+        text-align: center;
+    }
+
+    .contact-info {
+        padding-left: 0;
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .contact-info .social-icons {
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .contact-container {
+        padding: 20px;
+        max-width: 100%; /* Full width on mobile */
+    }
+
+    .contact-title {
+        font-size: 1.5em;
+    }
+
+    .contact-form .input-row {
+        flex-direction: column; /* Stack inputs vertically */
+    }
+
+    .contact-form input[type="text"],
+    .contact-form input[type="email"] {
+        width: 100%; /* Full width on mobile */
+        min-width: auto;
+    }
+
+    .contact-form button {
+        padding: 15px;
+    }
+
+    .contact-info .social-icons img {
+        width: 40px; /* Slightly smaller icons */
+    }
+
+    .contact-info .contact-step p {
+        font-size: 0.8em;
+        margin: 15px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-title {
+        font-size: 1.2em;
+    }
+
+    .contact-container {
+        padding: 15px;
+    }
+
+    .contact-form button {
+        padding: 12px;
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
 }
