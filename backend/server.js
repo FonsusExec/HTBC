@@ -5,7 +5,8 @@ import userRouter from "./routes/userRoutes.js";
 import data from "./data.js";
 import cors from "cors";
 import Stripe from "stripe";
-
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+import * as paypal from "@paypal/checkout-server-sdk";
 import Order from "./models/orderModel.js";
 import auth from "./middleware/auth.js";
 // import {auth} from "../backend/routes/userRoutes.js";
