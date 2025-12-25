@@ -4,6 +4,7 @@ import axios from "axios";
 import {useAuth} from "../../AuthContext"; // Adjust path
 import {toast} from "react-toastify";
 import "../Order/order.css"; // New CSS file below
+import Loading from "../../components/Loading";
 
 export default function Orders() {
     const [orders, setOrders] = useState([]);
@@ -38,7 +39,11 @@ export default function Orders() {
     }, [isLoggedIn, navigate]);
 
     if (loading) {
-        return <div className="orders-loading">Loading your orders...</div>;
+        return (
+            <div className="orders-loading">
+                <Loading />
+            </div>
+        );
     }
 
     if (error) {

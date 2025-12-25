@@ -33,7 +33,7 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    margin-left: -28px;
+    /* margin-left: -28px; */
 }
 
 .arrow-icon {

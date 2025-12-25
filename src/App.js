@@ -13,6 +13,8 @@ import OrderConfirmation from "./Pages/OrderConfirm/OrderConfirmation";
 import {AuthProvider} from "./AuthContext";
 import Orders from "./Pages/Order/Order";
 import {GoogleOAuthProvider} from "@react-oauth/google";
+import AllProductPage from "./Pages/AllProductPage/AllProductPage";
+import Blog from "./Pages/BlogPage/Blog";
 
 const GOOGLE_CLIENT_ID = "53484533068-h210045g5v4616crba7g8183nicq9rq7.apps.googleusercontent.com";
 
@@ -32,6 +34,8 @@ function App() {
                                     <Route path="cart" element={<CartScreen />} />
                                     <Route path="checkout" element={<CheckoutScreen />} />
                                     <Route path="order-confirmation" element={<OrderConfirmation />} />
+                                    <Route path="all-products" element={<AllProductPage />} />
+                                    <Route path="blog" element={<Blog />} />
                                     <Route path="orders" element={<Orders />} />
 
                                     <Route path="*" element={<div>404 Not Found</div>} />

@@ -7,6 +7,8 @@ import axios from "axios";
 // import logger from "use-reducer-logger";
 import Product from "../../components/Product";
 
+const ResourcesSection = React.lazy(() => import("../../components/ResourceSection"));
+
 const reducer = (state, action) => {
     switch (action.type) {
         case "FETCH_REQUEST":
@@ -180,7 +182,7 @@ export default function LandingPage() {
                     <div className="shop-grid">{loading ? <div>Loading...</div> : error ? <div>{error}</div> : products.map((product) => <Product key={product.htbc} product={product} />)}</div>
                 </div>
 
-                <div className="resources-container">
+                {/* <div className="resources-container">
                     <div className="view-items">VIEW ITEMS</div>
                     <h1 className="resources-title">Resources</h1>
                     <p className="resources-subtitle">Guides, prayers, and teachings to support your journey</p>
@@ -192,7 +194,10 @@ export default function LandingPage() {
                             </div>
                         ))}
                     </div>
-                </div>
+                </div> */}
+                <React.Suspense fallback={<div>Loading resources...</div>}>
+                    <ResourcesSection resources={resources} />
+                </React.Suspense>
 
                 <div className="community-container">
                     <div className="community-text">

@@ -25,7 +25,7 @@ export default function CartScreen() {
     };
 
     const continueShopping = () => {
-        navigate("/"); // Or to products list
+        navigate("/all-products"); // Or to products list
     };
 
     if (cartItemsCount === 0) {
