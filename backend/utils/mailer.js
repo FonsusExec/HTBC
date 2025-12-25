@@ -1,7 +1,7 @@
 import Brevo from "@getbrevo/brevo";
 
 const client = new Brevo.TransactionalEmailsApi();
-const apiKey = "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";
+
 console.log("🔍 Brevo API Key loaded:", apiKey ? `Yes (starts with ${apiKey.substring(0, 10)}...)` : "MISSING - Check .env");
 
 if (!apiKey) {
