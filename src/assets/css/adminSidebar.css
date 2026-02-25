@@ -1,0 +1,156 @@
+.admin-sidebar {
+    width: 250px;
+    background: #0b4f7c;
+    color: #fff;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-sidebar.collapsed {
+    width: 80px;
+}
+
+/* Header */
+.sidebar-header {
+    position: relative;
+    height: 80px; /* LOCK HEIGHT */
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* border-bottom: 1px solid rgba(255, 255, 255, 0.15); */
+}
+
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.sidebar-logo {
+    height: 48px; /* BIG LOGO */
+    width: auto;
+    object-fit: contain;
+
+    transition: height 0.2s ease;
+}
+
+.sidebar-header img {
+    height: 100px;
+}
+
+.collapse-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.admin-sidebar.collapsed {
+    width: 64px;
+}
+
+.admin-sidebar.collapsed .sidebar-logo {
+    height: 32px; /* shrink logo ONLY */
+}
+
+/* Scroll */
+.sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Section */
+.menu-section {
+    margin-bottom: 4px;
+}
+
+.menu-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+}
+
+.menu-title:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.menu-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Arrow */
+.arrow {
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.arrow.open {
+    transform: rotate(180deg);
+}
+
+/* Submenu */
+.submenu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.submenu.open {
+    max-height: 500px;
+}
+
+.submenu-title {
+    padding: 8px 32px;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.submenu li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 32px;
+    font-size: 13px;
+    text-decoration: none;
+    color: #dbe7f0;
+}
+
+.submenu li a:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.submenu li a.active {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
+
+/* Footer */
+.sidebar-footer {
+    padding: 16px;
+}
+
+.logout-btn {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    background: #fff;
+    color: #0b4f7c;
+    cursor: pointer;
+    border-radius: 4px;
+}

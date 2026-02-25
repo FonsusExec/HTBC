@@ -57,38 +57,38 @@ export default function Blog() {
                 pages.push(
                     <button key={i} className={`page-number ${currentPage === i ? "active" : ""}`} onClick={() => handlePageChange(i)}>
                         {i}
-                    </button>
+                    </button>,
                 );
             }
         } else {
             pages.push(
                 <button key={1} className={`page-number ${currentPage === 1 ? "active" : ""}`} onClick={() => handlePageChange(1)}>
                     1
-                </button>
+                </button>,
             );
             if (currentPage > 3)
                 pages.push(
                     <span key="dots1" className="dots">
                         …
-                    </span>
+                    </span>,
                 );
             for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
                 pages.push(
                     <button key={i} className={`page-number ${currentPage === i ? "active" : ""}`} onClick={() => handlePageChange(i)}>
                         {i}
-                    </button>
+                    </button>,
                 );
             }
             if (currentPage < totalPages - 2)
                 pages.push(
                     <span key="dots2" className="dots">
                         …
-                    </span>
+                    </span>,
                 );
             pages.push(
                 <button key={totalPages} className={`page-number ${currentPage === totalPages ? "active" : ""}`} onClick={() => handlePageChange(totalPages)}>
                     {totalPages}
-                </button>
+                </button>,
             );
         }
         return pages;
@@ -117,10 +117,12 @@ export default function Blog() {
                     <div className="blog-grid">
                         {posts.map((post) => (
                             <div key={post._id} className="blog-card">
-                                <img src={post.imageUrl} alt={post.title} />
-                                <h4>{post.title}</h4>
-                                <p>{post.excerpt}</p>
-                                <span className="category-tag">{post.category}</span>
+                                <div className="blog-card-content">
+                                    <img src={post.imageUrl} alt={post.title} />
+                                    <h4>{post.title}</h4>
+                                    <p>{post.excerpt}</p>
+                                    <span className="category-tag">{post.category}</span>
+                                </div>
                             </div>
                         ))}
                         {posts.length === 0 && <p>No posts found. Try a different search or page.</p>}
