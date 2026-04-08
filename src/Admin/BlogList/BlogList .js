@@ -148,9 +148,9 @@ export default function BlogList({contentType = "blog"}) {
         <div className="blog-page">
             <div className="blog-card">
                 {/* Debug panel – remove after testing */}
-                <div style={{background: "#e0ffe0", padding: "10px", margin: "10px 0", borderRadius: "4px"}}>
+                {/* <div style={{background: "#e0ffe0", padding: "10px", margin: "10px 0", borderRadius: "4px"}}>
                     Debug: Type = {contentType} | Filter = {filter} | Loaded = {blogs.length} items
-                </div>
+                </div> */}
 
                 {/* Header */}
                 <div className="blog-header">
@@ -217,7 +217,7 @@ export default function BlogList({contentType = "blog"}) {
                                     <td>{formatDate(blog.updatedAt || blog.createdAt)}</td>
                                     <td>
                                         <div className="action-buttons">
-                                            <button className="view-btn" onClick={() => navigate(`/${contentType}/${blog._id || blog.id}`)}>
+                                            <button className="view-btn" onClick={() => navigate(`/admin/view-${contentType}/${blog._id || blog.id}`)}>
                                                 View
                                             </button>
                                             <button className="edit-btn" onClick={() => navigate(`/admin/edit-${contentType}/${blog._id}`)}>

@@ -41,19 +41,19 @@ export default function Navigation() {
                 <a href="#" className={activeLink === "Home" ? "active" : ""} onClick={() => handleLinkClick("Home")}>
                     Home
                 </a>
-                <a href="#" className={activeLink === "About Us" ? "active" : ""} onClick={() => handleLinkClick("About Us")}>
+                <a href="#/contact-us" className={activeLink === "About Us" ? "active" : ""} onClick={() => handleLinkClick("About Us")}>
                     About Us
                 </a>
                 <a href="#/blog" className={activeLink === "Blog" ? "active" : ""} onClick={() => handleLinkClick("Blog")}>
                     Blog
                 </a>
-                <a href="#" className={activeLink === "News" ? "active" : ""} onClick={() => handleLinkClick("News")}>
+                <a href="#/news" className={activeLink === "News" ? "active" : ""} onClick={() => handleLinkClick("News")}>
                     News
                 </a>
                 <a href="#/all-products" className={activeLink === "Shop" ? "active" : ""} onClick={() => handleLinkClick("Shop")}>
                     Shop
                 </a>
-                <a href="#" className={activeLink === "Donate" ? "active" : ""} onClick={() => handleLinkClick("Donate")}>
+                <a href="#/donate" className={activeLink === "Donate" ? "active" : ""} onClick={() => handleLinkClick("Donate")}>
                     Donate
                 </a>
                 <a href="#" className={activeLink === "Contact" ? "active" : ""} onClick={() => handleLinkClick("Contact")}>

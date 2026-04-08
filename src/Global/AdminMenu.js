@@ -25,7 +25,7 @@ export const adminMenu = [
             {
                 type: "link",
                 label: "Resources",
-                path: "/admin/resources",
+                path: "/admin/resourcelist",
                 icon: <FaBook />,
             },
         ],
@@ -36,7 +36,7 @@ export const adminMenu = [
         icon: <FaShoppingCart />,
         roles: ["admin"],
         children: [
-            {type: "link", label: "Products", path: "/admin/store"},
+            {type: "link", label: "Products", path: "/admin/productlist"},
             {type: "link", label: "Orders", path: "/admin/orders"},
         ],
     },

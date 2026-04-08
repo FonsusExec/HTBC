@@ -26,6 +26,18 @@ import BlogDetail from "./Admin/BlogDetail/BlogDetail";
 import NewsArticle from "./Pages/News/NewsArticle";
 import CreateNews from "./Admin/CreateNews/CreateNews";
 import EditNews from "./Admin/CreateNews/EditNews";
+import CreateResources from "./Admin/Resources/CreateResources";
+import ResourceList from "./Admin/ResourceList/ResourceList";
+import AboutUs from "./Pages/AboutUs/AboutUs";
+import Donate from "./Pages/Donate/Donate";
+import EditResource from "./Admin/Resources/EditResource";
+import AddProduct from "./Admin/ProductItems/AddProduct";
+import ProductList from "./Admin/ProductItemList/ProductList";
+import EditProduct from "./Admin/ProductItems/EditProduct";
+import ViewProduct from "./Admin/ProductItems/ViewProduct";
+import CategoryForm from "./Admin/ProductCategory/Category";
+import SubCategoryForm from "./Admin/ProductCategory/SubCategory";
+import EditCategory from "./Admin/ProductCategory/EditCategory";
 
 const GOOGLE_CLIENT_ID = "53484533068-h210045g5v4616crba7g8183nicq9rq7.apps.googleusercontent.com";
 
@@ -50,6 +62,8 @@ function App() {
                                         <Route path="blog" element={<Blog />} />
                                         <Route path="orders" element={<Orders />} />
                                         <Route path="news" element={<NewsArticle />} />
+                                        <Route path="contact-us" element={<AboutUs />} />
+                                        <Route path="donate" element={<Donate />} />
                                         <Route path="*" element={<div>404 Not Found</div>} />
                                     </Route>
 
@@ -60,10 +74,20 @@ function App() {
                                         <Route path="newslist" element={<BlogList contentType="news" />} />
                                         <Route path="create-blog" element={<CreateBlog />} />
                                         <Route path="edit-blog/:id" element={<EditBlog />} />
-                                        <Route path="view-blog/:id" element={<BlogDetail contentType="blog" />} />
                                         <Route path="create-news" element={<CreateNews />} />
                                         <Route path="edit-news/:id" element={<EditNews />} />
                                         <Route path="view-news/:id" element={<BlogDetail contentType="news" />} />
+                                        <Route path="view-blog/:id" element={<BlogDetail contentType="blog" />} />
+                                        <Route path="resourcelist" element={<ResourceList />} />
+                                        <Route path="create-resource" element={<CreateResources />} />
+                                        <Route path="edit-resource/:id" element={<EditResource />} />
+                                        <Route path="add-product" element={<AddProduct />} />
+                                        <Route path="productlist" element={<ProductList />} />
+                                        <Route path="edit-product/:id" element={<EditProduct />} />
+                                        <Route path="view-product/:id" element={<ViewProduct />} />
+                                        <Route path="add-category" element={<CategoryForm />} />
+                                        <Route path="add-subcategory" element={<SubCategoryForm />} />
+                                        <Route path="edit-category/:id" element={<EditCategory />} />
                                         <Route path="*" element={<div>Admin 404 Not Found</div>} />
                                     </Route>
 

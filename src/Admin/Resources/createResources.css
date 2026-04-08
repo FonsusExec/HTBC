@@ -1,0 +1,159 @@
+.admin-page {
+    padding: 40px;
+    background: #f4f4f4;
+    min-height: 100vh;
+}
+
+/* Card */
+.admin-card {
+    background: white;
+    border-radius: 8px;
+    padding: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Header */
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.back-btn {
+    background: #000;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.card-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Form */
+.post-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group.full {
+    grid-column: span 2;
+}
+
+.form-group label {
+    font-size: 13px;
+    color: #444;
+}
+/* 
+.form-group input {
+    padding: 6px 0;
+} */
+
+.form-group .inputTitle {
+    padding: 10px 19px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    height: 19px;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+}
+
+.form-group select {
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+}
+
+.form-group textarea {
+    min-height: 140px;
+    resize: none;
+}
+
+/* Actions */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn {
+    min-width: 90px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+}
+
+.btn.cancel {
+    background: #000;
+    color: white;
+    padding: 15px 40px;
+}
+
+.btn.save {
+    background: #f2b705;
+    color: #000;
+    font-weight: 500;
+    padding: 15px 40px;
+}
+.btn.save:hover {
+    background: #e6a800;
+}
+
+.crop-modal-overlay {
+    background: rgba(0, 0, 0, 0.5) !important;
+}
+/* .crop-modal {
+    max-width: 600px !important;
+    padding: 20px !important;
+} */
+.crop-wrapper {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.crop-modal {
+    max-width: 90vw !important;
+    width: auto !important;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.crop-modal-overlay {
+    background: rgba(0, 0, 0, 0.65) !important;
+}

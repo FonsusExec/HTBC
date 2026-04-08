@@ -1,0 +1,95 @@
+.donate {
+    color: #222;
+}
+
+/* HERO */
+.donate-hero {
+    height: 320px;
+    background: url("../../assets/img/htba-background.jpg") center/cover no-repeat;
+    position: relative;
+}
+
+.donate-hero .overlay {
+    background: rgba(0, 0, 0, 0.45);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.donate-hero h1 {
+    color: #fff;
+    font-size: 40px;
+    font-weight: 500;
+}
+
+/* SECTION BACKGROUND */
+.donate-section {
+    background: #f4f4f4;
+    padding: 60px 5%;
+}
+
+/* CONTAINER (slightly stretched like screenshot) */
+.donate-container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* GRID */
+.donate-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 35px;
+}
+
+/* CARD */
+.donate-card {
+    background: #fff;
+    padding-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+
+.donate-card img {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+}
+
+.donate-card h3 {
+    font-size: 16px;
+    margin: 15px 15px 10px;
+    font-weight: 600;
+}
+
+.donate-card p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #666;
+    margin: 0 15px;
+}
+
+/* HOVER EFFECT */
+.donate-card:hover {
+    transform: translateY(-5px);
+}
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+    .donate-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .donate-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .donate-hero {
+        height: 250px;
+    }
+
+    .donate-hero h1 {
+        font-size: 30px;
+    }
+}

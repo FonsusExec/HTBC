@@ -4,8 +4,9 @@ import {toast} from "react-toastify";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import axios from "axios";
-import "./createNews.css"; // Reuse styles
+import "./createNews.css"; // Reuse styles from CreateBlog
 import Loading from "../../components/Loading";
+import slugify from "slugify";
 
 export default function EditNews() {
     const {id} = useParams(); // Get post ID from URL
@@ -22,12 +23,12 @@ export default function EditNews() {
     const [saving, setSaving] = useState(false);
     const [currentImage, setCurrentImage] = useState(""); // Preview current image
 
-    // Fetch post on mount
+    // Fetch post on mount (use /api/blogs/:id since data is merged)
     useEffect(() => {
         const fetchPost = async () => {
             try {
                 setLoading(true);
-                const {data} = await axios.get(`/api/news/${id}`); // ← Use /api/news/:id
+                const {data} = await axios.get(`/api/blogs/${id}`); // ← Use /api/blogs/:id
                 setTitle(data.title);
                 setBody(data.content || ""); // Full content as HTML
                 setSeoTitle(data.seoTitle || data.title || "");
@@ -66,12 +67,14 @@ export default function EditNews() {
         formData.append("seoTitle", seoTitle || title);
         formData.append("metaDescription", metaDescription);
         formData.append("keywords", keywords);
-        formData.append("slug", slug || slugify(title, {lower: true}));
+        formData.append("slug", slug || slugify(title, {lower: true, strict: true}));
+        formData.append("type", "news"); // Ensure type is news
 
         try {
-            await axios.put(`/api/news/${id}`, formData, {
+            await axios.put(`/api/blogs/${id}`, formData, {
+                // ← Use /api/blogs/:id for update
                 headers: {"Content-Type": "multipart/form-data"},
-            }); // PUT /api/news/:id
+            });
 
             toast.success("News article updated successfully!");
             navigate("/admin/newslist"); // Back to news list
@@ -83,7 +86,7 @@ export default function EditNews() {
         }
     };
 
-    // Quill config (same as CreateNews)
+    // Quill config (same as before)
     const modules = {
         toolbar: [
             [{header: [1, 2, false]}],
@@ -111,7 +114,7 @@ export default function EditNews() {
             <div className="admin-card">
                 {/* Header */}
                 <div className="card-header">
-                    <button className="back-btn" onClick={() => navigate("/admin/news")}>
+                    <button className="back-btn" onClick={() => navigate("/admin/newslist")}>
                         ← Back to News List
                     </button>
                     <h2>Edit News Article</h2>
@@ -122,10 +125,8 @@ export default function EditNews() {
                     <div className="form-grid">
                         <div className="form-group">
                             <label>Title</label>
-                            <input type="text" placeholder="Enter title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                            <input type="text" placeholder="Enter" value={title} onChange={(e) => setTitle(e.target.value)} />
                         </div>
-
-                        {/* Removed Category */}
 
                         <div className="form-group">
                             <label>SEO Title (Optional)</label>
