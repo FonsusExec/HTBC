@@ -1,0 +1,465 @@
+/* ===== User View / Activity Log shared styles ===== */
+
+:root {
+    --al-bg: #f5f4f0;
+    --al-card-bg: #ffffff;
+    --al-accent: #efbf04;
+    --al-accent-hover: #f8c843;
+    --al-accent-light: #fdf3d6;
+    --al-text-primary: #1a1a1a;
+    --al-text-secondary: #6b6b6b;
+    --al-text-muted: #9b9b9b;
+    --al-border: #e8e6e1;
+    --al-row-hover: #fafaf7;
+    --al-row-selected: #fdf8ec;
+    --al-shadow: 0 2px 16px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.04);
+    --al-radius: 14px;
+    --al-radius-sm: 8px;
+    --al-font-body: "DM Sans", sans-serif;
+    --al-font-heading: "Sora", sans-serif;
+}
+
+/* ── Wrapper & Card ───────────────────────────────────────────────── */
+.al-wrapper {
+    min-height: 100vh;
+    background: var(--al-bg);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: var(--al-font-body);
+}
+
+.al-card {
+    width: 100%;
+    max-width: 1100px;
+    background: var(--al-card-bg);
+    border-radius: var(--al-radius);
+    box-shadow: var(--al-shadow);
+    border: 1px solid var(--al-border);
+    overflow: hidden;
+}
+
+/* ── Top bar ──────────────────────────────────────────────────────── */
+.al-topbar {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 28px 32px 0;
+}
+
+.al-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 9px 18px;
+    background: var(--al-text-primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--al-font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition:
+        background 0.15s ease,
+        transform 0.12s ease;
+}
+
+.al-back-btn:hover {
+    background: #333;
+    transform: translateX(-2px);
+}
+
+.al-back-arrow {
+    font-size: 1.1rem;
+    line-height: 1;
+    margin-top: -1px;
+}
+
+.al-title {
+    font-family: var(--al-font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--al-text-primary);
+    letter-spacing: -0.03em;
+    flex: 1; /* pushes Create User button to far right */
+}
+
+/* ── Create User button (gold, far right) ─────────────────────────── */
+.al-btn-create {
+    padding: 10px 22px;
+    background: var(--al-accent);
+    color: var(--al-text-primary);
+    border: none;
+    border-radius: 10px;
+    font-family: var(--al-font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition:
+        background 0.16s ease,
+        transform 0.12s ease,
+        box-shadow 0.16s ease;
+    letter-spacing: 0.01em;
+}
+
+.al-btn-create:hover {
+    background: var(--al-accent-hover);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(212, 160, 23, 0.4);
+}
+
+.al-btn-create:active {
+    transform: translateY(0);
+}
+
+/* ── Filter bar: tabs (left) + search (center) ────────────────────── */
+.al-filterbar {
+    display: flex;
+    align-items: center;
+    padding: 22px 32px 0;
+    gap: 16px;
+}
+
+/* Tabs — left side, don't grow */
+.al-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+.al-tab {
+    padding: 7px 20px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-family: var(--al-font-body);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--al-text-secondary);
+    cursor: pointer;
+    transition: all 0.16s ease;
+    white-space: nowrap;
+}
+
+.al-tab:hover {
+    color: var(--al-text-primary);
+    background: #f0ede6;
+}
+
+.al-tab--active {
+    background: #ebebeb;
+    color: var(--al-text-primary);
+    font-weight: 600;
+}
+
+/* Search — centered, takes remaining space */
+.al-search-wrap {
+    position: relative;
+    flex: 1;
+    max-width: 340px;
+    margin: 0 auto; /* centers it in the remaining space */
+}
+
+.al-search-icon {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 15px;
+    height: 15px;
+    color: var(--al-text-muted);
+    pointer-events: none;
+}
+
+.al-search-input {
+    width: 100%;
+    padding: 8px 12px 8px 33px;
+    border: 1px solid var(--al-border);
+    border-radius: var(--al-radius-sm);
+    font-family: var(--al-font-body);
+    font-size: 0.845rem;
+    color: var(--al-text-primary);
+    background: #faf9f6;
+    outline: none;
+    transition:
+        border-color 0.16s ease,
+        box-shadow 0.16s ease;
+}
+
+.al-search-input::placeholder {
+    color: var(--al-text-muted);
+}
+
+.al-search-input:focus {
+    border-color: var(--al-accent);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.12);
+}
+
+/* ── Table ────────────────────────────────────────────────────────── */
+.al-table-wrap {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+.al-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.al-th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 0.77rem;
+    font-weight: 600;
+    color: var(--al-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: #faf9f6;
+    border-top: 1px solid var(--al-border);
+    border-bottom: 1px solid var(--al-border);
+    white-space: nowrap;
+}
+
+.al-row {
+    border-bottom: 1px solid var(--al-border);
+    transition: background 0.13s ease;
+}
+
+.al-row:last-child {
+    border-bottom: none;
+}
+.al-row:hover {
+    background: var(--al-row-hover);
+}
+
+.al-td {
+    padding: 15px 16px;
+    color: var(--al-text-primary);
+    font-size: 0.875rem;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.al-td--name {
+    font-weight: 600;
+}
+.al-td--email {
+    color: var(--al-text-secondary);
+    font-size: 0.845rem;
+}
+.al-td--date {
+    color: var(--al-text-secondary);
+    font-size: 0.825rem;
+}
+.al-td--action-label {
+    font-weight: 500;
+}
+
+.al-td--actions {
+    display: flex;
+    align-items: center;
+}
+
+/* ── Role badge (dynamic hue) ─────────────────────────────────────── */
+.al-role {
+    display: inline-block;
+    padding: 3px 11px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+/* Static badges */
+.al-role--admin {
+    background: #e8f0fe;
+    color: #1a56b0;
+}
+.al-role--editor {
+    background: #fdf3d6;
+    color: #92620a;
+}
+.al-role--manager {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+/* Dynamic hue badge for roles fetched from API */
+.al-role-custom {
+    background: hsl(var(--hue), 60%, 92%);
+    color: hsl(var(--hue), 60%, 30%);
+}
+
+/* ── View button ──────────────────────────────────────────────────── */
+.al-action-btn {
+    padding: 5px 16px;
+    border-radius: 6px;
+    background: #f0f0f0;
+    color: var(--al-text-secondary);
+    border: 1px solid #e0e0e0;
+    font-family: var(--al-font-body);
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.14s ease;
+}
+
+.al-action-btn:hover {
+    background: #e4e4e4;
+    color: var(--al-text-primary);
+    border-color: #ccc;
+}
+
+/* ── States: loading / error / empty ─────────────────────────────── */
+.al-loading {
+    display: flex;
+    justify-content: center;
+    padding: 60px 32px;
+}
+
+.al-error {
+    text-align: center;
+    padding: 48px 32px;
+    color: #c62828;
+    font-size: 0.9rem;
+}
+
+.al-empty {
+    text-align: center;
+    padding: 56px 16px !important;
+    color: var(--al-text-muted);
+    font-size: 0.9rem;
+}
+
+/* ── Pagination (reuses ecm- classes from productList) ───────────── */
+.ecm-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 32px 24px;
+    border-top: 1px solid var(--al-border);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.ecm-pagination__info {
+    font-size: 0.825rem;
+    color: var(--al-text-muted);
+}
+
+.ecm-pagination__controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ecm-page-btn {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid var(--al-border);
+    background: #fff;
+    border-radius: 7px;
+    font-family: var(--al-font-body);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--al-text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ecm-page-btn:hover:not(:disabled) {
+    background: var(--al-accent-light);
+    border-color: var(--al-accent);
+    color: var(--al-accent-hover);
+}
+
+.ecm-page-btn--active {
+    background: var(--al-accent);
+    border-color: var(--al-accent);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(212, 160, 23, 0.35);
+}
+
+.ecm-page-btn--active:hover {
+    background: var(--al-accent-hover) !important;
+    border-color: var(--al-accent-hover) !important;
+    color: #fff !important;
+}
+
+.ecm-page-btn--nav {
+    font-size: 1.1rem;
+}
+
+.ecm-page-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.ecm-page-ellipsis {
+    min-width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--al-text-muted);
+    font-size: 0.9rem;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .al-wrapper {
+        padding: 16px 8px;
+    }
+    .al-topbar {
+        padding: 20px 16px 0;
+    }
+
+    .al-filterbar {
+        padding: 16px 16px 0;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    /* On mobile, search drops below tabs and goes full width */
+    .al-search-wrap {
+        flex: none;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        order: 2;
+    }
+
+    .al-tabs {
+        order: 1;
+    }
+
+    .al-th,
+    .al-td {
+        padding: 10px 10px;
+    }
+
+    .ecm-pagination {
+        padding: 14px 16px 18px;
+        justify-content: center;
+    }
+
+    .ecm-pagination__info {
+        width: 100%;
+        text-align: center;
+    }
+}

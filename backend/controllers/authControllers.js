@@ -42,12 +42,13 @@ export const googleAuth = async (req, res) => {
 
         // 5️⃣ Create JWT token
         const token = user.generateToken();
+        const authUser = await User.findById(user._id).populate("role", "name slug").select("-password");
 
         res.status(200).json({
             success: true,
             message: "Google login successful",
             token,
-            user,
+            user: authUser,
         });
     } catch (error) {
         console.error("GOOGLE AUTH ERROR:", error);

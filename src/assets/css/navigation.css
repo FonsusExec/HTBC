@@ -24,6 +24,24 @@
     gap: 20px;
 }
 
+.nav-panel {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.mobile-nav-toggle {
+    display: none;
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    color: #fff;
+    cursor: pointer;
+    font-size: 18px;
+}
+
 .nav-links a {
     color: #d3d3d3;
     text-decoration: none;
@@ -151,11 +169,80 @@
     color: #dc3545;
 }
 
-/* Responsive: Hide dropdown on small screens if needed */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
+    .navbar {
+        min-height: 78px;
+        padding: 10px 16px;
+        background: rgba(20, 20, 20, 0.72);
+        backdrop-filter: blur(12px);
+        box-sizing: border-box;
+    }
+
+    .logo img {
+        height: 64px;
+        margin-left: 0;
+    }
+
+    .mobile-nav-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: auto;
+        flex-shrink: 0;
+    }
+
+    .nav-panel {
+        position: absolute;
+        top: 100%;
+        left: 12px;
+        right: 12px;
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+        padding: 18px;
+        background: rgba(19, 28, 35, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    .nav-panel--open {
+        display: flex;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .nav-links a {
+        padding: 12px 10px;
+        border-radius: 6px;
+    }
+
+    .nav-links a.active {
+        border-bottom: 0;
+        background: rgba(239, 191, 4, 0.12);
+    }
+
+    .login-btn,
+    .profile-section {
+        margin: 0;
+        width: 100%;
+    }
+
+    .login-btn,
+    .profile-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 13px 16px;
+        box-sizing: border-box;
+    }
+
     .dropdown-menu {
         right: auto;
         left: 0;
-        min-width: 140px;
+        min-width: 100%;
     }
 }

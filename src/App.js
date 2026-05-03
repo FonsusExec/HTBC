@@ -38,6 +38,20 @@ import ViewProduct from "./Admin/ProductItems/ViewProduct";
 import CategoryForm from "./Admin/ProductCategory/Category";
 import SubCategoryForm from "./Admin/ProductCategory/SubCategory";
 import EditCategory from "./Admin/ProductCategory/EditCategory";
+import AdminOrders from "./Admin/OrderItems/Orders";
+import OrderDetail from "./Admin/OrderItems/OrderDetails";
+import CreateUser from "./Admin/AdminUser/CreateUser";
+import UserRole from "./Admin/AdminUser/UserRole";
+import UserView from "./Admin/AdminUser/UserView";
+import ViewUserDetail from "./Admin/AdminUser/ViewUserDetail";
+import EditUser from "./Admin/AdminUser/EditUser";
+import DonationForm from "./Pages/Donate/DonationForm";
+import DonationTracking from "./Admin/DonationTracker/DonationTracker";
+import ImpactStories from "./Admin/DonationStory/ImpactStories";
+import CreateImpactStory from "./Admin/DonationStory/CreateImpactStory";
+import Dashboard from "./Admin/Dashboard/Dashboard";
+import CommunityManagement from "./Admin/Community/CommunityManagement";
+import "./assets/css/responsive.css";
 
 const GOOGLE_CLIENT_ID = "53484533068-h210045g5v4616crba7g8183nicq9rq7.apps.googleusercontent.com";
 
@@ -64,11 +78,15 @@ function App() {
                                         <Route path="news" element={<NewsArticle />} />
                                         <Route path="contact-us" element={<AboutUs />} />
                                         <Route path="donate" element={<Donate />} />
+                                        <Route path="donationform" element={<DonationForm />} />
+                                        <Route path="donationform/:donationId" element={<DonationForm />} />
                                         <Route path="*" element={<div>404 Not Found</div>} />
                                     </Route>
 
                                     {/* Admin Routes */}
                                     <Route path="admin" element={<AdminLayout />}>
+                                        <Route index element={<Dashboard />} />
+                                        <Route path="dashboard" element={<Dashboard />} />
                                         {/* <Route path="bloglist" element={<BlogList />} /> */}
                                         <Route path="bloglist" element={<BlogList contentType="blog" />} />
                                         <Route path="newslist" element={<BlogList contentType="news" />} />
@@ -88,6 +106,18 @@ function App() {
                                         <Route path="add-category" element={<CategoryForm />} />
                                         <Route path="add-subcategory" element={<SubCategoryForm />} />
                                         <Route path="edit-category/:id" element={<EditCategory />} />
+                                        <Route path="orders" element={<AdminOrders />} />
+                                        <Route path="view-orders/:id" element={<OrderDetail />} />
+                                        <Route path="create-users" element={<CreateUser />} />
+                                        <Route path="create-roles" element={<UserRole />} />
+                                        <Route path="view-users" element={<UserView />} />
+                                        <Route path="user-detail/:id" element={<ViewUserDetail />} />
+                                        <Route path="edit-users/:id" element={<EditUser />} />
+                                        <Route path="donation-tracker" element={<DonationTracking />} />
+                                        <Route path="donation-story-list" element={<ImpactStories />} />
+                                        <Route path="create-impact-story" element={<CreateImpactStory />} />
+                                        <Route path="edit-impact-story/:id" element={<CreateImpactStory />} />
+                                        <Route path="community" element={<CommunityManagement />} />
                                         <Route path="*" element={<div>Admin 404 Not Found</div>} />
                                     </Route>
 

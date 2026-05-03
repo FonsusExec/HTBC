@@ -1,6 +1,19 @@
-import {FaFileAlt, FaNewspaper, FaBook, FaShoppingCart, FaUsers, FaDonate, FaComments} from "react-icons/fa";
+import {FaFileAlt, FaNewspaper, FaBook, FaShoppingCart, FaUsers, FaDonate, FaComments, FaTachometerAlt} from "react-icons/fa";
 
 export const adminMenu = [
+    {
+        label: "Dashboard",
+        icon: <FaTachometerAlt />,
+        roles: ["admin", "editor", "moderator"],
+        children: [
+            {
+                type: "link",
+                label: "Overview",
+                path: "/admin/dashboard",
+            },
+        ],
+    },
+
     {
         label: "Content Management",
         icon: <FaFileAlt />,
@@ -45,14 +58,17 @@ export const adminMenu = [
         label: "User Management",
         icon: <FaUsers />,
         roles: ["admin"],
-        children: [{type: "link", label: "Users", path: "/admin/users"}],
+        children: [{type: "link", label: "Users", path: "/admin/view-users"}],
     },
 
     {
         label: "Donation Management",
         icon: <FaDonate />,
         roles: ["admin"],
-        children: [{type: "link", label: "Donations", path: "/admin/donations"}],
+        children: [
+            {type: "link", label: "Donations", path: "/admin/donation-tracker"},
+            {type: "link", label: "Impact Stories", path: "/admin/donation-story-list"},
+        ],
     },
 
     {

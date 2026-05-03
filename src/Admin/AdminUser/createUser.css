@@ -1,0 +1,313 @@
+/* ===== Create User Page ===== */
+
+:root {
+    --cu-bg: #f5f4f0;
+    --cu-card-bg: #ffffff;
+    --cu-accent: #f3c548;
+    --cu-accent-hover: #f3c548;
+    --cu-text-primary: #1a1a1a;
+    --cu-text-secondary: #6b6b6b;
+    --cu-text-muted: #9b9b9b;
+    --cu-text-placeholder: #b0aca4;
+    --cu-border: #e8e6e1;
+    --cu-border-focus: #d4a017;
+    --cu-error: #c62828;
+    --cu-error-bg: #fff0f0;
+    --cu-error-border: #ffb3b3;
+    --cu-shadow: 0 2px 16px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.04);
+    --cu-radius: 14px;
+    --cu-radius-sm: 10px;
+    --cu-font-body: "DM Sans", sans-serif;
+    --cu-font-heading: "Sora", sans-serif;
+}
+
+/* ── Wrapper & Card ─────────────────────────────────────────────────── */
+.cu-wrapper {
+    min-height: 100vh;
+    background: var(--cu-bg);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: var(--cu-font-body);
+}
+
+.cu-card {
+    width: 100%;
+    max-width: 900px;
+    background: var(--cu-card-bg);
+    border-radius: var(--cu-radius);
+    box-shadow: var(--cu-shadow);
+    border: 1px solid var(--cu-border);
+    padding: 32px;
+}
+
+/* ── Top bar ────────────────────────────────────────────────────────── */
+.cu-topbar {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 36px;
+}
+
+.cu-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 9px 18px;
+    background: var(--cu-text-primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--cu-font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.15s ease,
+        transform 0.12s ease;
+    flex-shrink: 0;
+}
+
+.cu-back-btn:hover {
+    background: #333;
+    transform: translateX(-2px);
+}
+
+.cu-back-arrow {
+    font-size: 1.1rem;
+    line-height: 1;
+    margin-top: -1px;
+}
+
+.cu-title {
+    font-family: var(--cu-font-heading);
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--cu-text-primary);
+    letter-spacing: -0.03em;
+    flex: 1; /* pushes Create Role to the far right */
+}
+
+/* ── Create Role button (far right) ────────────────────────────────── */
+.cu-btn-create-role {
+    padding: 9px 20px;
+    background: #efbf04;
+    color: var(--cu-text-primary);
+    border: 1.5px solid var(--cu-border);
+    border-radius: 10px;
+    font-family: var(--cu-font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.16s ease;
+    flex-shrink: 0;
+}
+
+.cu-btn-create-role:hover {
+    border-color: var(--cu-accent);
+    color: black;
+    background: var(--cu-accent-light, #f3c548);
+}
+
+/* ── Form ───────────────────────────────────────────────────────────── */
+.cu-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.cu-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* ── Field ──────────────────────────────────────────────────────────── */
+.cu-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cu-label {
+    font-size: 0.825rem;
+    font-weight: 500;
+    color: var(--cu-text-secondary);
+    letter-spacing: 0.01em;
+}
+
+/* Input */
+.cu-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--cu-border);
+    border-radius: var(--cu-radius-sm);
+    font-family: var(--cu-font-body);
+    font-size: 0.9rem;
+    color: var(--cu-text-primary);
+    background: #fff;
+    outline: none;
+    transition:
+        border-color 0.16s ease,
+        box-shadow 0.16s ease;
+}
+
+.cu-input::placeholder {
+    color: var(--cu-text-placeholder);
+}
+
+.cu-input:focus {
+    border-color: var(--cu-border-focus);
+    box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.12);
+}
+
+/* Select wrapper */
+.cu-select-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.cu-select {
+    width: 100%;
+    padding: 12px 40px 12px 14px;
+    border: 1px solid var(--cu-border);
+    border-radius: var(--cu-radius-sm);
+    font-family: var(--cu-font-body);
+    font-size: 0.9rem;
+    color: var(--cu-text-primary);
+    background: #fff;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    transition:
+        border-color 0.16s ease,
+        box-shadow 0.16s ease;
+}
+
+/* Placeholder option colour */
+.cu-select:invalid,
+.cu-select option[value=""] {
+    color: var(--cu-text-placeholder);
+}
+
+.cu-select:focus {
+    border-color: var(--cu-border-focus);
+    box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.12);
+}
+
+.cu-select-chevron {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 8px;
+    color: var(--cu-text-muted);
+    pointer-events: none;
+}
+
+/* Error state */
+.cu-field--error .cu-input,
+.cu-field--error .cu-select {
+    border-color: var(--cu-error-border);
+    background: var(--cu-error-bg);
+}
+
+.cu-field--error .cu-input:focus,
+.cu-field--error .cu-select:focus {
+    box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
+    border-color: var(--cu-error);
+}
+
+.cu-error-msg {
+    font-size: 0.775rem;
+    color: var(--cu-error);
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+/* ── Footer actions ─────────────────────────────────────────────────── */
+.cu-form-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+    padding-top: 8px;
+}
+
+.cu-btn {
+    padding: 11px 32px;
+    border-radius: 10px;
+    font-family: var(--cu-font-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.16s ease;
+    letter-spacing: 0.01em;
+}
+
+.cu-btn--cancel {
+    background: var(--cu-text-primary);
+    color: #fff;
+}
+
+.cu-btn--cancel:hover {
+    background: #333;
+    transform: translateY(-1px);
+}
+
+.cu-btn--save {
+    background: var(--cu-accent);
+    color: black;
+}
+
+.cu-btn--save:hover {
+    background: var(--cu-accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(212, 160, 23, 0.42);
+}
+
+.cu-btn--cancel:active,
+.cu-btn--save:active {
+    transform: translateY(0);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .cu-wrapper {
+        padding: 16px 10px;
+    }
+    .cu-card {
+        padding: 20px 16px;
+    }
+
+    .cu-topbar {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .cu-title {
+        flex: none;
+    }
+
+    .cu-btn-create-role {
+        margin-left: auto;
+    }
+
+    .cu-form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .cu-form-footer {
+        flex-direction: column-reverse;
+    }
+
+    .cu-btn {
+        width: 100%;
+        text-align: center;
+    }
+}

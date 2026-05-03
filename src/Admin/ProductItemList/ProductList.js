@@ -165,17 +165,24 @@ export default function ProductList() {
     };
 
     const executeDeleteCategory = async () => {
+        if (!catConfirmId) return;
+
         setDeletingCatIds((prev) => new Set([...prev, catConfirmId]));
+
         try {
-            await axios.delete(`/api/categories/${catConfirmId}`);
+            const res = await axios.delete(`/api/categories/${catConfirmId}`);
+
             toast.success("Category deleted successfully");
-            fetchCategories();
-        } catch (err) {
-            toast.error("Failed to delete category");
-        } finally {
-            setDeletingCatIds(new Set());
+            fetchCategories(); // Refresh list
             setShowCatConfirm(false);
             setCatConfirmId(null);
+        } catch (err) {
+            console.error("Delete category error:", err);
+
+            const errorMsg = err.response?.data?.message || "Failed to delete category";
+            toast.error(errorMsg);
+        } finally {
+            setDeletingCatIds(new Set());
         }
     };
 
@@ -433,9 +440,14 @@ export default function ProductList() {
                             <div className="confirm-modal__icon">🗑️</div>
                             <h3 className="confirm-modal__title">Confirm Deletion</h3>
                             <p className="confirm-modal__body">
-                                Are you sure you want to delete <strong>this category</strong>?
-                                <br />
+                                Are you sure you want to delete <strong>this category</strong>?<br />
                                 This action cannot be undone.
+                                {catConfirmId && (
+                                    <span style={{color: "#dc3545", fontSize: "0.95rem"}}>
+                                        <br />
+                                        Note: You can only delete categories that have no products assigned.
+                                    </span>
+                                )}
                             </p>
                             <div className="confirm-modal__actions">
                                 <button className="confirm-btn confirm-btn--cancel" onClick={() => setShowCatConfirm(false)}>

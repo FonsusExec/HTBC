@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {toast} from "react-toastify";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
@@ -12,6 +12,7 @@ export default function CreateBlog() {
     const [title, setTitle] = useState("");
     const [body, setBody] = useState("");
     const [media, setMedia] = useState(null);
+    const [mediaPreview, setMediaPreview] = useState("");
     const [category, setCategory] = useState("Faith Formation");
     const [seoTitle, setSeoTitle] = useState("");
     const [metaDescription, setMetaDescription] = useState("");
@@ -20,6 +21,18 @@ export default function CreateBlog() {
     const [loading, setLoading] = useState(false);
 
     const categories = ["Faith Formation", "Apologetics", "Spirituality"];
+
+    useEffect(() => {
+        if (!media) {
+            setMediaPreview("");
+            return;
+        }
+
+        const previewUrl = URL.createObjectURL(media);
+        setMediaPreview(previewUrl);
+
+        return () => URL.revokeObjectURL(previewUrl);
+    }, [media]);
 
     const handleTitleChange = (e) => {
         const newTitle = e.target.value;
@@ -30,9 +43,7 @@ export default function CreateBlog() {
 
     const handleMediaChange = (e) => {
         const file = e.target.files?.[0];
-        if (file) {
-            setMedia(file);
-        }
+        setMedia(file || null);
     };
 
     const handleSubmit = async (e) => {
@@ -76,6 +87,7 @@ export default function CreateBlog() {
             setTitle("");
             setBody("");
             setMedia(null);
+            setMediaPreview("");
             setCategory("Faith Formation");
             setSeoTitle("");
             setMetaDescription("");
@@ -164,8 +176,9 @@ export default function CreateBlog() {
                             <label>Media (optional)</label>
                             <input type="file" accept="image/*" onChange={handleMediaChange} />
                             {media && (
-                                <div style={{marginTop: "8px"}}>
-                                    <small>Selected: {media.name}</small>
+                                <div className="admin-image-preview">
+                                    <p>Image Preview: {media.name}</p>
+                                    <img src={mediaPreview} alt="Selected blog media preview" />
                                 </div>
                             )}
                         </div>

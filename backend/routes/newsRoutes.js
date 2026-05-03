@@ -101,7 +101,7 @@ router.get(
             // Limit length
             content = content.substring(0, 8000);
 
-            // Images (already extracted in your fetchNews, but here for completeness)
+            // Images for manual article drafting.
             const images = root
                 .querySelectorAll("img")
                 .map((img) => img.getAttribute("src"))

@@ -1,11 +1,18 @@
 import "../assets/css/adminHeader.css";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faBars} from "@fortawesome/free-solid-svg-icons";
 // import logo from "../assets/img/htbc-logo.png";
 
-const AdminHeader = ({userName = "Admin"}) => {
+const AdminHeader = ({userName = "Admin", onMenuToggle}) => {
     return (
         <header className="admin-header">
             {/* Left */}
-            <div className="admin-header-left">{/* <img src={logo} alt="Logo" className="admin-logo" /> */}</div>
+            <div className="admin-header-left">
+                <button className="admin-menu-toggle" type="button" aria-label="Open admin menu" onClick={onMenuToggle}>
+                    <FontAwesomeIcon icon={faBars} />
+                </button>
+                {/* <img src={logo} alt="Logo" className="admin-logo" /> */}
+            </div>
 
             {/* Right */}
             <div className="admin-header-right">

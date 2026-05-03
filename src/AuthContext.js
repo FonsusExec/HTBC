@@ -4,6 +4,17 @@ import {toast} from "react-toastify";
 
 const AuthContext = createContext();
 
+const getAuthUser = (data) => {
+    if (!data) return null;
+    return data.user || {
+        _id: data._id,
+        name: data.name,
+        email: data.email,
+        role: data.role,
+        isAdmin: data.isAdmin,
+    };
+};
+
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) throw new Error("useAuth must be used within AuthProvider");
@@ -41,9 +52,10 @@ export const AuthProvider = ({children}) => {
     const login = async (email, password) => {
         try {
             const {data} = await axios.post("/api/users/signin", {email, password});
+            const authUser = getAuthUser(data);
             localStorage.setItem("token", data.token);
             setAuthHeader(data.token);
-            setUser(data.user);
+            setUser(authUser);
             toast.success("Login successful!");
             return {success: true};
         } catch (err) {
@@ -56,11 +68,12 @@ export const AuthProvider = ({children}) => {
     const signup = async (name, email, password) => {
         try {
             const {data} = await axios.post("/api/users/signup", {name, email, password});
+            const authUser = getAuthUser(data);
             localStorage.setItem("token", data.token);
             setAuthHeader(data.token);
-            setUser(data.user);
+            setUser(authUser);
             toast.success("Account created!");
-            return {success: true};
+            return {success: true, user: authUser};
         } catch (err) {
             toast.error(err.response?.data?.message || "Signup failed");
             return {success: false};

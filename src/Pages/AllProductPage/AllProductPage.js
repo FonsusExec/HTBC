@@ -5,6 +5,7 @@ import {useCart} from "../../CartContext";
 import axios from "axios";
 import "./allProductPage.css";
 import {Link} from "react-router-dom";
+import {getProductId, getProductsFromResponse} from "../../utils/productHelpers";
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -31,8 +32,8 @@ export default function AllProductPage() {
         const fetchData = async () => {
             dispatch({type: "FETCH_REQUEST"});
             try {
-                const result = await axios.get("/api/products");
-                dispatch({type: "FETCH_SUCCESS", payload: result.data});
+                const result = await axios.get("/api/products", {params: {limit: 100}});
+                dispatch({type: "FETCH_SUCCESS", payload: getProductsFromResponse(result.data)});
             } catch (error) {
                 dispatch({type: "FETCH_FAIL", payload: error.message});
             }
@@ -66,7 +67,7 @@ export default function AllProductPage() {
                         ) : error ? (
                             <div>{error}</div>
                         ) : (
-                            products.map((product) => <Product key={product.htbc} product={product} />)
+                            products.map((product) => <Product key={getProductId(product)} product={product} />)
                         )}
                     </div>
                 </div>

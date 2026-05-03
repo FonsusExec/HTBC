@@ -17,6 +17,19 @@
 .admin-header-left {
     display: flex;
     align-items: center;
+    gap: 12px;
+}
+
+.admin-menu-toggle {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fff;
+    color: #1f2933;
+    cursor: pointer;
+    font-size: 17px;
 }
 
 .admin-logo {
@@ -56,4 +69,27 @@
     font-size: 14px;
     font-weight: 500;
     color: #333;
+}
+
+@media (max-width: 980px) {
+    .admin-header {
+        height: 58px;
+        padding: 0 14px;
+    }
+
+    .admin-menu-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .admin-header-right {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 520px) {
+    .admin-name {
+        display: none;
+    }
 }

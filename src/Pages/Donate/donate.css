@@ -47,6 +47,11 @@
     background: #fff;
     padding-bottom: 20px;
     transition: transform 0.3s ease;
+    color: inherit;
+    display: block;
+    text-decoration: none;
+    border-radius: 4px;
+    overflow: hidden;
 }
 
 .donate-card img {
@@ -66,11 +71,39 @@
     line-height: 1.6;
     color: #666;
     margin: 0 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 /* HOVER EFFECT */
 .donate-card:hover {
     transform: translateY(-5px);
+}
+
+.donate-state {
+    padding: 28px;
+    border: 1px solid #e8eaee;
+    border-radius: 8px;
+    background: #f8f9fb;
+    color: #667085;
+    text-align: center;
+    font-size: 14px;
+}
+
+.donate-state--loading {
+    padding: 0;
+}
+
+.donate-state--loading .loading-container {
+    min-height: 220px;
+}
+
+.donate-state--error {
+    color: #b42318;
+    background: #fff4f2;
+    border-color: #fecdca;
 }
 
 /* RESPONSIVE */

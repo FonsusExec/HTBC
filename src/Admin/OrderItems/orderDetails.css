@@ -1,0 +1,179 @@
+/* ==================== ORDER DETAIL PAGE ==================== */
+.ord-detail-wrapper {
+    padding: 20px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.ord-detail-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    max-width: 900px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.ord-detail-header {
+    padding: 24px 32px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    background: #f8f9fa;
+}
+
+.ord-detail-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: #333;
+}
+
+.ord-detail-id {
+    font-size: 1.1rem;
+    color: #666;
+    font-weight: 500;
+    background: #e9ecef;
+    padding: 6px 14px;
+    border-radius: 30px;
+}
+
+/* Back Button */
+.ord-back-btn {
+    background: none;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #555;
+    transition: all 0.2s;
+}
+
+.ord-back-btn:hover {
+    background: #f1f3f5;
+    border-color: #ccc;
+}
+
+/* Main Content */
+.ord-detail-content {
+    padding: 32px;
+}
+
+.ord-detail-summary {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.ord-detail-info p {
+    margin: 8px 0;
+    color: #444;
+}
+
+.ord-detail-status {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+/* Order Items */
+.ord-detail-section {
+    margin-bottom: 40px;
+}
+
+.ord-detail-section h3 {
+    margin-bottom: 18px;
+    color: #333;
+    font-size: 1.35rem;
+}
+
+.ord-items-list {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.ord-item-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.ord-item-row:last-child {
+    border-bottom: none;
+}
+
+/* Total Section */
+.ord-detail-total {
+    background: #f8f9fa;
+    padding: 20px 24px;
+    border-radius: 10px;
+    margin-top: 30px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: #222;
+}
+
+/* Footer */
+.ord-detail-footer {
+    padding: 24px 32px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+.ord-btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.ord-btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ord-detail-content {
+        padding: 20px;
+    }
+
+    .ord-detail-header {
+        padding: 20px;
+    }
+
+    .ord-detail-summary {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .ord-items-list {
+        padding: 15px;
+    }
+}
+
+/* Loading & Error States */
+.ord-detail-loading,
+.ord-detail-error {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+    font-size: 1.1rem;
+}

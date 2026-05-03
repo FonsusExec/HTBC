@@ -3,8 +3,9 @@ import "../assets/css/footer.css";
 
 export default function Footer() {
     return (
-        <div className="contact-container">
+        <footer className="contact-container">
             <div className="contact-form">
+                <p className="contact-kicker">Stay Connected</p>
                 <h2 className="contact-title">Contact Us</h2>
                 <form>
                     <div className="input-row">
@@ -19,6 +20,10 @@ export default function Footer() {
                 </form>
             </div>
             <div className="contact-info">
+                <div className="footer-brand">
+                    <img src={require("../assets/img/htbc-logo.png")} alt="HowtobeCatholic" />
+                    <p>Helping Catholics learn, shop, donate, and stay connected with the faith community.</p>
+                </div>
                 <div className="contact-step">
                     <div className="social-icons">
                         <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
@@ -41,6 +46,6 @@ export default function Footer() {
                     <p>St. Benedict Catholic Church 214/5 Elmwood Avenue Brookfield, IL 60513 United States</p>
                 </div>
             </div>
-        </div>
+        </footer>
     );
 }

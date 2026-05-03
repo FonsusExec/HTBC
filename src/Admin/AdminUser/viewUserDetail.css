@@ -1,0 +1,602 @@
+/* ===== View User Page ===== */
+
+:root {
+    --vu-bg: #f5f4f0;
+    --vu-card-bg: #ffffff;
+    --vu-accent: #efbf04;
+    --vu-accent-hover: #f8c843;
+    --vu-accent-light: #fdf3d6;
+    --vu-text-primary: #1a1a1a;
+    --vu-text-secondary: #6b6b6b;
+    --vu-text-muted: #9b9b9b;
+    --vu-border: #e8e6e1;
+    --vu-section-bg: #faf9f6;
+    --vu-shadow: 0 2px 16px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.04);
+    --vu-shadow-md: 0 4px 24px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
+    --vu-radius: 14px;
+    --vu-radius-sm: 8px;
+    --vu-font-body: "DM Sans", sans-serif;
+    --vu-font-heading: "Sora", sans-serif;
+}
+
+/* ── Wrapper ──────────────────────────────────────────────────────── */
+.vu-wrapper {
+    min-height: 100vh;
+    background: var(--vu-bg);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px 60px;
+    font-family: var(--vu-font-body);
+}
+
+.vu-card {
+    width: 100%;
+    max-width: 900px;
+    background: var(--vu-card-bg);
+    border-radius: var(--vu-radius);
+    box-shadow: var(--vu-shadow);
+    border: 1px solid var(--vu-border);
+    overflow: hidden;
+}
+
+.vu-card--loading,
+.vu-card--error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: 20px;
+    color: var(--vu-text-muted);
+    font-size: 0.9rem;
+}
+
+/* ── Top bar ──────────────────────────────────────────────────────── */
+.vu-topbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 26px 32px;
+    border-bottom: 1px solid var(--vu-border);
+}
+
+.vu-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 16px;
+    background: var(--vu-text-primary);
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    font-family: var(--vu-font-body);
+    font-size: 0.855rem;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition:
+        background 0.15s ease,
+        transform 0.12s ease;
+}
+
+.vu-back-btn span {
+    font-size: 1.1rem;
+    margin-top: -1px;
+}
+
+.vu-back-btn:hover {
+    background: #333;
+    transform: translateX(-2px);
+}
+
+.vu-page-title {
+    font-family: var(--vu-font-heading);
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--vu-text-primary);
+    letter-spacing: -0.03em;
+    flex: 1;
+}
+
+.vu-topbar-actions {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.vu-btn {
+    padding: 8px 20px;
+    border-radius: 9px;
+    font-family: var(--vu-font-body);
+    font-size: 0.855rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.vu-btn--edit {
+    background: var(--vu-accent);
+    color: var(--vu-text-primary);
+    border-color: var(--vu-accent);
+}
+
+.vu-btn--edit:hover {
+    background: var(--vu-accent-hover);
+    color: black;
+    transform: translateY(-1px);
+}
+
+.vu-btn--delete {
+    background: #fff0f0;
+    color: #c62828;
+    border-color: #ffd0d0;
+}
+
+.vu-btn--delete:hover {
+    background: #ffe0e0;
+    border-color: #c62828;
+}
+
+/* ── Profile header ───────────────────────────────────────────────── */
+.vu-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 28px 32px;
+    background: linear-gradient(135deg, #faf9f6 0%, #fff 60%);
+    border-bottom: 1px solid var(--vu-border);
+    flex-wrap: wrap;
+}
+
+/* Avatar */
+.vu-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: hsl(var(--hue, 200), 55%, 88%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 3px solid hsl(var(--hue, 200), 55%, 78%);
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+.vu-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.vu-avatar-initials {
+    font-family: var(--vu-font-heading);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: hsl(var(--hue, 200), 55%, 28%);
+    line-height: 1;
+    letter-spacing: -0.02em;
+}
+
+/* Profile meta */
+.vu-profile-meta {
+    flex: 1;
+    min-width: 0;
+}
+
+.vu-user-name {
+    font-family: var(--vu-font-heading);
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--vu-text-primary);
+    letter-spacing: -0.03em;
+    margin-bottom: 4px;
+}
+
+.vu-user-email {
+    font-size: 0.875rem;
+    color: var(--vu-text-secondary);
+    margin-bottom: 12px;
+}
+
+.vu-profile-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Role badge */
+.vu-role-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    background: hsl(var(--hue, 200), 60%, 92%);
+    color: hsl(var(--hue, 200), 60%, 28%);
+}
+
+.vu-role-badge--inline {
+    font-size: 0.8rem;
+    padding: 4px 12px;
+}
+
+/* Status badge */
+.vu-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.vu-status-badge--active {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.vu-status-badge--inactive {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.vu-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+
+/* Profile stats (far right) */
+.vu-profile-stat-group {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--vu-border);
+    border-radius: var(--vu-radius-sm);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.vu-profile-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 22px;
+    gap: 4px;
+    border-right: 1px solid var(--vu-border);
+    background: #fff;
+    min-width: 90px;
+}
+
+.vu-profile-stat:last-child {
+    border-right: none;
+}
+
+.vu-profile-stat__value {
+    font-family: var(--vu-font-heading);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--vu-text-primary);
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+
+.vu-profile-stat__label {
+    font-size: 0.72rem;
+    color: var(--vu-text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* ── Info sections ────────────────────────────────────────────────── */
+.vu-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.vu-section {
+    padding: 28px 32px;
+    border-bottom: 1px solid var(--vu-border);
+}
+
+.vu-section:last-child {
+    border-bottom: none;
+}
+
+.vu-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--vu-font-heading);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--vu-text-primary);
+    letter-spacing: -0.01em;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.vu-section-title svg {
+    color: var(--vu-accent);
+    flex-shrink: 0;
+}
+
+/* Field grid */
+.vu-field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 32px;
+}
+
+.vu-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.vu-field--full {
+    grid-column: 1 / -1;
+}
+
+.vu-field-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--vu-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+}
+
+.vu-field-value {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--vu-text-primary);
+    line-height: 1.4;
+}
+
+/* Verified indicators */
+.vu-verified {
+    color: #2e7d32;
+    font-weight: 600;
+}
+.vu-unverified {
+    color: #c62828;
+    font-weight: 600;
+}
+
+/* ── Activity grid ────────────────────────────────────────────────── */
+.vu-activity-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+.vu-activity-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px 20px;
+    background: var(--vu-section-bg);
+    border: 1px solid var(--vu-border);
+    border-radius: var(--vu-radius-sm);
+    transition: box-shadow 0.15s ease;
+}
+
+.vu-activity-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+.vu-activity-card__value {
+    font-family: var(--vu-font-heading);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--vu-text-primary);
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+
+.vu-activity-card__label {
+    font-size: 0.75rem;
+    color: var(--vu-text-muted);
+    font-weight: 500;
+}
+
+/* ── Delete Confirm Modal ─────────────────────────────────────────── */
+.vu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+    animation: vuFadeIn 0.15s ease;
+}
+
+@keyframes vuFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.vu-modal {
+    background: #fff;
+    border-radius: var(--vu-radius);
+    padding: 36px 32px 28px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.18),
+        0 4px 16px rgba(0, 0, 0, 0.1);
+    animation: vuSlideUp 0.18s ease;
+}
+
+@keyframes vuSlideUp {
+    from {
+        transform: translateY(12px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.vu-modal__icon {
+    font-size: 2.2rem;
+    margin-bottom: 12px;
+}
+
+.vu-modal__title {
+    font-family: var(--vu-font-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--vu-text-primary);
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+}
+
+.vu-modal__body {
+    font-size: 0.9rem;
+    color: var(--vu-text-secondary);
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.vu-modal__body strong {
+    color: var(--vu-text-primary);
+}
+
+.vu-modal__actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.vu-modal-btn {
+    padding: 10px 28px;
+    border-radius: var(--vu-radius-sm);
+    font-family: var(--vu-font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+    min-width: 110px;
+}
+
+.vu-modal-btn--cancel {
+    background: #f0ede6;
+    color: var(--vu-text-secondary);
+    border-color: var(--vu-border);
+}
+
+.vu-modal-btn--cancel:hover {
+    background: #e8e5de;
+    color: var(--vu-text-primary);
+}
+
+.vu-modal-btn--delete {
+    background: #c62828;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(198, 40, 40, 0.3);
+}
+
+.vu-modal-btn--delete:hover:not(:disabled) {
+    background: #b71c1c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(198, 40, 40, 0.4);
+}
+
+.vu-modal-btn--delete:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .vu-wrapper {
+        padding: 16px 8px 40px;
+    }
+
+    .vu-topbar {
+        padding: 18px 16px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .vu-page-title {
+        flex: none;
+        width: 100%;
+        order: -1;
+    }
+    .vu-topbar-actions {
+        margin-left: auto;
+    }
+
+    .vu-profile-header {
+        padding: 20px 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .vu-profile-stat-group {
+        width: 100%;
+    }
+
+    .vu-profile-stat {
+        flex: 1;
+        padding: 12px 10px;
+    }
+
+    .vu-section {
+        padding: 20px 16px;
+    }
+
+    .vu-field-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .vu-field--full {
+        grid-column: auto;
+    }
+
+    .vu-activity-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .vu-modal {
+        margin: 16px;
+        padding: 28px 20px 22px;
+    }
+}
+
+@media (max-width: 480px) {
+    .vu-activity-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .vu-topbar-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    .vu-btn {
+        width: 100%;
+        text-align: center;
+    }
+}

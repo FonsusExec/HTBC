@@ -17,7 +17,7 @@ export async function fetchNews() {
         try {
             const response = await axios.get(source.url, {
                 headers: {
-                    "User-Agent": "CatholicNewsAggregator/1.0 (https://howtobecatholic.com; howtobeacatholic23@gmail.com)", // ← Change to your real email/site
+                    "User-Agent": "CatholicNewsAggregator/1.0 (https://howtobecatholic.com; howtobeacatholic23@gmail.com)",
                 },
                 timeout: 20000,
             });
@@ -30,7 +30,6 @@ export async function fetchNews() {
                 const exists = await NewsArticle.findOne({url: item.link});
                 if (exists) continue;
 
-                // Extract best image from RSS
                 let imageUrl = null;
                 if (item.enclosure?.url && item.enclosure.type?.startsWith("image/")) {
                     imageUrl = item.enclosure.url;
@@ -63,7 +62,7 @@ export async function fetchNews() {
             if (err.response) {
                 console.error("Status:", err.response.status);
                 if (err.response.status === 429) {
-                    console.warn("Rate limited — consider waiting 15–60 min or adding email in User-Agent");
+                    console.warn("Rate limited. Wait before trying the external feed again.");
                 }
             }
         }
@@ -71,12 +70,3 @@ export async function fetchNews() {
 
     console.log("News fetch complete.");
 }
-
-// Run once on startup
-fetchNews().catch(console.error);
-
-const intervalMs = 7200000 + Math.floor(Math.random() * 7200000); // 2–4 hours
-setInterval(fetchNews, intervalMs);
-
-// Every hour
-setInterval(fetchNews, 4 * 60 * 60 * 1000);

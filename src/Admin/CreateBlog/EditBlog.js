@@ -18,6 +18,7 @@ export default function EditBlog() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [currentImage, setCurrentImage] = useState(""); // Preview current image
+    const [mediaPreview, setMediaPreview] = useState("");
 
     const categories = ["Faith Formation", "Apologetics", "Spirituality"];
 
@@ -43,6 +44,18 @@ export default function EditBlog() {
 
         fetchPost();
     }, [id, navigate]);
+
+    useEffect(() => {
+        if (!media) {
+            setMediaPreview("");
+            return;
+        }
+
+        const previewUrl = URL.createObjectURL(media);
+        setMediaPreview(previewUrl);
+
+        return () => URL.revokeObjectURL(previewUrl);
+    }, [media]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -139,11 +152,11 @@ export default function EditBlog() {
 
                         <div className="form-group">
                             <label>Media (Optional - replaces current)</label>
-                            <input type="file" accept="image/*" onChange={(e) => setMedia(e.target.files[0])} />
-                            {currentImage && (
-                                <div className="current-image">
-                                    <p>Current Image:</p>
-                                    <img src={currentImage} alt="Current" style={{width: "100px", height: "auto", marginTop: "5px"}} />
+                            <input type="file" accept="image/*" onChange={(e) => setMedia(e.target.files?.[0] || null)} />
+                            {(mediaPreview || currentImage) && (
+                                <div className="admin-image-preview">
+                                    <p>{mediaPreview ? `New Image Preview: ${media.name}` : "Current Image:"}</p>
+                                    <img src={mediaPreview || currentImage} alt={mediaPreview ? "Selected blog media preview" : "Current blog media"} />
                                 </div>
                             )}
                         </div>

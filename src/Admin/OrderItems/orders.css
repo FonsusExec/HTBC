@@ -1,0 +1,546 @@
+/* ===== Orders Page ===== */
+
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Sora:wght@600;700;800&display=swap");
+
+:root {
+    --ord-bg: #f5f4f0;
+    --ord-card-bg: #ffffff;
+    --ord-accent: #efbf04;
+    --ord-accent-hover: #f0c54f;
+    --ord-accent-light: #fdf3d6;
+    --ord-text-primary: #1a1a1a;
+    --ord-text-secondary: #6b6b6b;
+    --ord-text-muted: #9b9b9b;
+    --ord-border: #e8e6e1;
+    --ord-row-hover: #fafaf7;
+    --ord-row-selected: #fdf8ec;
+    --ord-shadow: 0 2px 16px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.04);
+    --ord-radius: 14px;
+    --ord-radius-sm: 8px;
+    --ord-font-body: "DM Sans", sans-serif;
+    --ord-font-heading: "Sora", sans-serif;
+
+    /* status colours */
+    --ord-green: #2e7d32;
+    --ord-green-bg: #e8f5e9;
+    --ord-amber: #e65100;
+    --ord-amber-bg: #fff3e0;
+    --ord-red: #c62828;
+    --ord-red-bg: #ffebee;
+}
+
+/* ── Wrapper & Card ───────────────────────────────────────────────── */
+.ord-wrapper {
+    min-height: 100vh;
+    background: var(--ord-bg);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: var(--ord-font-body);
+}
+
+.ord-card {
+    width: 100%;
+    max-width: 1160px;
+    background: var(--ord-card-bg);
+    border-radius: var(--ord-radius);
+    box-shadow: var(--ord-shadow);
+    border: 1px solid var(--ord-border);
+    overflow: hidden;
+}
+
+/* ── Top bar ──────────────────────────────────────────────────────── */
+.ord-topbar {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 28px 32px 0;
+}
+
+.ord-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    background: var(--ord-text-primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--ord-font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.16s ease,
+        transform 0.12s ease;
+    letter-spacing: 0.01em;
+}
+
+.ord-back-btn:hover {
+    background: #333;
+    transform: translateX(-2px);
+}
+
+.ord-back-arrow {
+    font-size: 1.1rem;
+    line-height: 1;
+    margin-top: -1px;
+}
+
+.ord-title {
+    font-family: var(--ord-font-heading);
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--ord-text-primary);
+    letter-spacing: -0.03em;
+}
+
+/* ── Stat cards ───────────────────────────────────────────────────── */
+.ord-stats {
+    display: flex;
+    gap: 16px;
+    padding: 28px 32px 0;
+    flex-wrap: wrap;
+}
+
+.ord-stat-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px 32px 20px 22px;
+    border: 1px solid var(--ord-border);
+    border-radius: var(--ord-radius-sm);
+    background: #fff;
+    min-width: 180px;
+    transition: box-shadow 0.16s ease;
+}
+
+.ord-stat-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.ord-stat-label {
+    font-size: 0.825rem;
+    font-weight: 500;
+    color: var(--ord-text-secondary);
+    letter-spacing: 0.01em;
+}
+
+.ord-stat-value {
+    font-family: var(--ord-font-heading);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ord-text-primary);
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+
+/* ── Filter bar ───────────────────────────────────────────────────── */
+.ord-filterbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 32px 0;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+/* Status tab pills */
+.ord-status-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ord-status-tab {
+    padding: 7px 20px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-family: var(--ord-font-body);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ord-text-secondary);
+    cursor: pointer;
+    transition: all 0.16s ease;
+    white-space: nowrap;
+}
+
+.ord-status-tab:hover {
+    color: var(--ord-text-primary);
+    background: #f0ede6;
+}
+
+.ord-status-tab--active {
+    background: #ebebeb;
+    color: var(--ord-text-primary);
+    font-weight: 600;
+}
+
+/* Right side of filter bar */
+.ord-filterbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+/* Search */
+.ord-search-wrap {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--ord-border);
+    border-radius: var(--ord-radius-sm);
+    background: #faf9f6;
+    overflow: hidden;
+    transition:
+        border-color 0.16s ease,
+        box-shadow 0.16s ease;
+}
+
+.ord-search-wrap--open {
+    border-color: var(--ord-accent);
+    box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.12);
+}
+
+.ord-search-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--ord-text-muted);
+    transition: color 0.14s ease;
+    flex-shrink: 0;
+}
+
+.ord-search-icon-btn:hover {
+    color: var(--ord-text-primary);
+}
+
+.ord-search-input {
+    width: 200px;
+    border: none;
+    background: transparent;
+    font-family: var(--ord-font-body);
+    font-size: 0.845rem;
+    color: var(--ord-text-primary);
+    outline: none;
+    padding: 0 12px 0 0;
+}
+
+.ord-search-input::placeholder {
+    color: var(--ord-text-muted);
+}
+
+/* Date dropdown */
+.ord-date-wrap {
+    position: relative;
+}
+
+.ord-date-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid var(--ord-border);
+    border-radius: var(--ord-radius-sm);
+    background: #faf9f6;
+    font-family: var(--ord-font-body);
+    font-size: 0.845rem;
+    font-weight: 500;
+    color: var(--ord-text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease;
+}
+
+.ord-date-btn:hover {
+    border-color: #ccc;
+    background: #f3f1ea;
+}
+
+.ord-date-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 140px;
+    background: #fff;
+    border: 1px solid var(--ord-border);
+    border-radius: var(--ord-radius-sm);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    z-index: 50;
+    overflow: hidden;
+    animation: dropIn 0.14s ease;
+}
+
+@keyframes dropIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ord-date-option {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    text-align: left;
+    background: transparent;
+    border: none;
+    font-family: var(--ord-font-body);
+    font-size: 0.845rem;
+    color: var(--ord-text-secondary);
+    cursor: pointer;
+    transition: background 0.12s ease;
+}
+
+.ord-date-option:hover {
+    background: var(--ord-row-hover);
+    color: var(--ord-text-primary);
+}
+
+.ord-date-option--active {
+    color: var(--ord-accent-hover);
+    font-weight: 600;
+    background: var(--ord-accent-light);
+}
+
+/* Generate Report button */
+.ord-btn-report {
+    padding: 10px 22px;
+    background: var(--ord-accent);
+    color: black;
+    border: none;
+    border-radius: var(--ord-radius-sm);
+    font-family: var(--ord-font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+        background 0.16s ease,
+        transform 0.12s ease,
+        box-shadow 0.16s ease;
+    letter-spacing: 0.01em;
+}
+
+.ord-btn-report:hover {
+    background: var(--ord-accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(212, 160, 23, 0.4);
+}
+
+.ord-btn-report:active {
+    transform: translateY(0);
+}
+
+/* ── Table ────────────────────────────────────────────────────────── */
+.ord-table-wrap {
+    margin-top: 24px;
+    overflow-x: auto;
+}
+
+.ord-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.ord-th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 0.77rem;
+    font-weight: 600;
+    color: var(--ord-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: #faf9f6;
+    border-top: 1px solid var(--ord-border);
+    border-bottom: 1px solid var(--ord-border);
+    white-space: nowrap;
+}
+
+.ord-th--check {
+    width: 44px;
+    padding-left: 24px;
+}
+
+.ord-row {
+    border-bottom: 1px solid var(--ord-border);
+    transition: background 0.13s ease;
+}
+
+.ord-row:last-child {
+    border-bottom: none;
+}
+
+.ord-row:hover {
+    background: var(--ord-row-hover);
+}
+.ord-row--selected {
+    background: var(--ord-row-selected);
+}
+
+.ord-td {
+    padding: 15px 16px;
+    color: var(--ord-text-primary);
+    font-size: 0.875rem;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.ord-td--check {
+    padding-left: 24px;
+    width: 44px;
+}
+
+.ord-td--id {
+    font-weight: 600;
+    color: var(--ord-text-primary);
+}
+
+.ord-td--date {
+    color: var(--ord-text-secondary);
+    font-size: 0.825rem;
+}
+
+.ord-td--customer {
+    font-weight: 500;
+}
+
+.ord-td--total {
+    font-weight: 600;
+}
+
+/* ── Badges ───────────────────────────────────────────────────────── */
+.ord-badge,
+.ord-pay {
+    display: inline-block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+/* Progress badges */
+.ord-badge--completed {
+    color: var(--ord-green);
+}
+.ord-badge--ongoing {
+    color: var(--ord-amber);
+}
+.ord-badge--cancelled {
+    color: var(--ord-red);
+}
+
+/* Payment */
+.ord-pay--success {
+    color: var(--ord-green);
+}
+.ord-pay--failed {
+    color: var(--ord-red);
+}
+
+/* ── Action buttons ───────────────────────────────────────────────── */
+.ord-td--actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.ord-action-btn {
+    padding: 5px 14px;
+    border-radius: 6px;
+    font-family: var(--ord-font-body);
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.14s ease;
+}
+
+.ord-action-btn--view {
+    background: #f0f0f0;
+    color: var(--ord-text-secondary);
+    border-color: #e0e0e0;
+}
+
+.ord-action-btn--view:hover {
+    background: #e4e4e4;
+    color: var(--ord-text-primary);
+}
+
+.ord-action-btn--cancel {
+    background: var(--ord-red-bg);
+    color: var(--ord-red);
+    border-color: #ffd0d0;
+}
+
+.ord-action-btn--cancel:hover {
+    background: #ffe0e0;
+    border-color: var(--ord-red);
+}
+
+/* ── Checkbox ─────────────────────────────────────────────────────── */
+.ord-checkbox {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--ord-accent);
+    cursor: pointer;
+}
+
+/* ── Empty row ────────────────────────────────────────────────────── */
+.ord-empty {
+    text-align: center;
+    padding: 56px 16px !important;
+    color: var(--ord-text-muted);
+    font-size: 0.9rem;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+    .ord-filterbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .ord-filterbar-right {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 640px) {
+    .ord-wrapper {
+        padding: 12px 8px;
+    }
+    .ord-topbar {
+        padding: 18px 16px 0;
+    }
+    .ord-stats {
+        padding: 18px 16px 0;
+    }
+    .ord-filterbar {
+        padding: 18px 16px 0;
+    }
+    .ord-th,
+    .ord-td {
+        padding: 10px 10px;
+    }
+    .ord-th--check,
+    .ord-td--check {
+        padding-left: 12px;
+    }
+    .ord-stat-value {
+        font-size: 1.6rem;
+    }
+}

@@ -47,12 +47,18 @@ userRouter.post(
             password: hashedPassword,
         });
 
-        res.send({
+        const authUser = {
             _id: user._id,
             name: user.name,
             email: user.email,
+            role: user.role,
             isAdmin: user.isAdmin,
+        };
+
+        res.send({
+            ...authUser,
             token: generateToken(user),
+            user: authUser,
         });
     })
 );
@@ -62,16 +68,22 @@ userRouter.post(
     "/signin",
     expressAsyncHandler(async (req, res) => {
         const {email, password} = req.body;
-        const user = await User.findOne({email}); // Fixed: Query by email
+        const user = await User.findOne({email}).populate("role", "name slug"); // Fixed: Query by email
 
         if (user && bcrypt.compareSync(password, user.password)) {
             // Fixed: Proper if condition
-            res.send({
+            const authUser = {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                role: user.role,
                 isAdmin: user.isAdmin,
+            };
+
+            res.send({
+                ...authUser,
                 token: generateToken(user),
+                user: authUser,
             });
             return;
         }
@@ -86,7 +98,7 @@ userRouter.get(
     auth, // ← Apply middleware here
     expressAsyncHandler(async (req, res) => {
         // No need to extract/verify token—middleware did it
-        const user = await User.findById(req.user._id).select("-password"); // Uses decoded _id
+        const user = await User.findById(req.user._id).populate("role", "name slug").select("-password"); // Uses decoded _id
         if (!user) {
             return res.status(404).json({message: "User not found"});
         }
@@ -94,6 +106,7 @@ userRouter.get(
             _id: user._id,
             name: user.name,
             email: user.email,
+            role: user.role,
             isAdmin: user.isAdmin,
         });
     })
@@ -106,7 +119,7 @@ userRouter.get("/auth/google", passport.authenticate("google", {scope: ["profile
 userRouter.get("/auth/google/callback", passport.authenticate("google", {session: false}), (req, res) => {
     // Generate token (your utils)
     const token = generateToken(req.user);
-    res.json({token, user: {_id: req.user._id, name: req.user.name, email: req.user.email, isAdmin: req.user.isAdmin}});
+    res.json({token, user: {_id: req.user._id, name: req.user.name, email: req.user.email, role: req.user.role, isAdmin: req.user.isAdmin}});
 });
 
 userRouter.post("/google-auth", googleAuth);

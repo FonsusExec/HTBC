@@ -1,30 +1,29 @@
 import React from "react";
 import {Link} from "react-router-dom";
 import {useCart} from "../CartContext";
+import {getProductImage, getProductName, getProductPrice, getProductRouteId, toCartItem} from "../utils/productHelpers";
 
 function Product({product}) {
     const {addToCart} = useCart();
+    const name = getProductName(product);
+    const image = getProductImage(product);
+    const price = getProductPrice(product);
+    const routeId = getProductRouteId(product);
 
     const addToCartHandler = () => {
-        addToCart({
-            _id: product.htbc, // 🔑 map htbc → _id
-            name: product.name,
-            image: product.image,
-            price: product.price, // string or number OK (context parses)
-            qty: 1, // 🔑 REQUIRED
-        });
+        addToCart(toCartItem(product));
     };
 
     return (
         <div className="product-item">
-            <img src={product.image} alt={product.name} />
+            <img src={image} alt={name} />
 
-            <Link to={`/product/${product.htbc}`} className="product-name" style={{textDecoration: "none", color: "black"}}>
-                <h3>{product.name}</h3>
+            <Link to={`/product/${routeId}`} className="product-name" style={{textDecoration: "none", color: "black"}}>
+                <h3>{name}</h3>
             </Link>
 
             <div className="price-and-cart">
-                <div className="price">${product.price}</div>
+                <div className="price">${price}</div>
                 <button className="add-to-cart" onClick={addToCartHandler}>
                     Add to Cart
                 </button>

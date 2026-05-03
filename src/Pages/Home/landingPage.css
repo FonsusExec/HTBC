@@ -174,6 +174,32 @@
     background-color: #ffd700;
 }
 
+.landing-section-state {
+    grid-column: 1 / -1;
+    min-height: 120px;
+    padding: 24px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.72);
+    color: #5f677b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.landing-section-state--inline {
+    min-height: 120px;
+    padding: 10px 0;
+    background: transparent;
+    justify-content: flex-start;
+    text-align: left;
+}
+
+.landing-section-state--error {
+    color: #b42318;
+    background: #fff4f2;
+}
+
 /* News Section */
 /* .news-section {
     max-width: 1200px;
@@ -410,6 +436,17 @@
     gap: 20px;
 }
 
+.shop-loading,
+.shop-error {
+    grid-column: 1 / -1;
+}
+
+.shop-error {
+    padding: 28px;
+    text-align: center;
+    color: #b42318;
+}
+
 .product-item {
     text-align: center;
     padding: 10px;
@@ -535,6 +572,18 @@
     /* border: 1px solid #ddd; */
     border-radius: 5px;
     text-align: center;
+    color: inherit;
+    display: block;
+    min-height: 150px;
+    text-decoration: none;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.resource-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(2, 70, 122, 0.12);
 }
 
 .resource-item img {
@@ -546,6 +595,19 @@
 .resource-item p {
     color: #333;
     font-size: 0.9em;
+}
+
+.resource-type {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(239, 191, 4, 0.16);
+    color: #02467a;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
 .community-container {
@@ -668,7 +730,7 @@
 
 .donate-item img {
     width: 100%;
-    /* height: 100%; */
+    height: 340px;
     object-fit: cover;
     display: block;
     transition: transform 0.3s ease;
@@ -724,4 +786,10 @@
     color: #888;
     text-align: center;
     margin: 5px 0;
+}
+
+@media (max-width: 640px) {
+    .donate-item img {
+        height: 260px;
+    }
 }

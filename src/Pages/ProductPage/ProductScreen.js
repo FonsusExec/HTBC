@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "../ProductPage/productScreen.css";
 import {useCart} from "../../CartContext";
 import Loading from "../../components/Loading";
+import {getProductId, getProductImage, getProductName, getProductPrice, toCartItem} from "../../utils/productHelpers";
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -22,7 +23,7 @@ const reducer = (state, action) => {
 
 export default function ProductScreen() {
     const params = useParams();
-    const {htbc} = params;
+    const {htbc: productParam} = params;
     const {getCartCount, addToCart, getCartItems, updateQty, removeFromCart} = useCart();
 
     const [{loading, product, error}, dispatch] = React.useReducer(reducer, {
@@ -34,41 +35,45 @@ export default function ProductScreen() {
         const fetchData = async () => {
             dispatch({type: "FETCH_REQUEST"});
             try {
-                const result = await axios.get(`/api/products/htbc/${htbc}`);
+                const isDatabaseId = /^[a-f\d]{24}$/i.test(productParam);
+                const result = await axios.get(isDatabaseId ? `/api/products/${productParam}` : `/api/products/htbc/${productParam}`);
                 dispatch({type: "FETCH_SUCCESS", payload: result.data});
             } catch (error) {
                 dispatch({type: "FETCH_FAIL", payload: error.message});
             }
         };
         fetchData();
-    }, [htbc]);
+    }, [productParam]);
 
     const [quantity, setQuantity] = React.useState(0);
 
     // Sync quantity with cart if item exists
     React.useEffect(() => {
-        if (product && product._id) {
-            const existItem = getCartItems().find((x) => x._id === product._id);
+        const productId = getProductId(product);
+        if (productId) {
+            const existItem = getCartItems().find((x) => x._id === productId);
             setQuantity(existItem ? existItem.qty : 0);
         }
     }, [product, getCartItems]);
 
     const handleIncrement = () => {
-        const existItem = getCartItems().find((x) => x._id === product._id);
+        const productId = getProductId(product);
+        const existItem = getCartItems().find((x) => x._id === productId);
         if (existItem) {
-            updateQty(product._id, existItem.qty + 1);
+            updateQty(productId, existItem.qty + 1);
         } else {
             setQuantity((prev) => prev + 1);
         }
     };
 
     const handleDecrement = () => {
-        const existItem = getCartItems().find((x) => x._id === product._id);
+        const productId = getProductId(product);
+        const existItem = getCartItems().find((x) => x._id === productId);
         if (existItem) {
             if (existItem.qty > 1) {
-                updateQty(product._id, existItem.qty - 1);
+                updateQty(productId, existItem.qty - 1);
             } else {
-                removeFromCart(product._id);
+                removeFromCart(productId);
             }
         } else {
             setQuantity((prev) => Math.max(0, prev - 1));
@@ -80,13 +85,14 @@ export default function ProductScreen() {
             toast.error("Please select a quantity");
             return;
         }
-        const existItem = getCartItems().find((x) => x._id === product._id);
+        const cartItem = toCartItem(product, quantity);
+        const existItem = getCartItems().find((x) => x._id === cartItem._id);
         if (existItem) {
-            updateQty(product._id, quantity);
-            toast.info(`Updated ${product.name} quantity to ${quantity}`);
+            updateQty(cartItem._id, quantity);
+            toast.info(`Updated ${cartItem.name} quantity to ${quantity}`);
         } else {
-            addToCart({...product, qty: quantity});
-            toast.success(`${quantity} ${product.name} added to cart!`);
+            addToCart(cartItem);
+            toast.success(`${quantity} ${cartItem.name} added to cart!`);
         }
         // No reset; stays synced
     };
@@ -100,6 +106,10 @@ export default function ProductScreen() {
             </div>
         );
     if (error) return <div>{error}</div>;
+
+    const productName = getProductName(product);
+    const productImage = getProductImage(product);
+    const productPrice = getProductPrice(product);
 
     return (
         <div className="product-page-container">
@@ -127,14 +137,14 @@ export default function ProductScreen() {
                     {/* Product Images */}
                     <div className="product-images">
                         <div className="main-image yellow-border">
-                            <img src={product.image} alt="htbc image" />
+                            <img src={productImage} alt={productName} />
                         </div>
                     </div>
 
                     {/* Product Details */}
                     <div className="product-details">
-                        <h1 className="product-title">{product.name}</h1>
-                        <p className="product-price">${product.price}</p>
+                        <h1 className="product-title">{productName}</h1>
+                        <p className="product-price">${productPrice}</p>
                         <p className="product-description">{product.description}</p>
                         {/* <div className="rating">
                             <span className="stars">★★★★☆</span>
