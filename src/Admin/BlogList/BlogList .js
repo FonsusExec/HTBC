@@ -14,25 +14,19 @@ export default function BlogList({contentType = "blog"}) {
     const [filter, setFilter] = useState("all");
     const [currentPage, setCurrentPage] = useState(1);
     const limit = 10;
+    const isNews = contentType === "news";
 
     const fetchContent = async () => {
         try {
             setLoading(true);
             setError(null);
 
-            const {data} = await axios.get("/api/blogs", {
-                params: {
-                    page: currentPage,
-                    limit,
-                    type: contentType,
-                },
-            });
+            const endpoint = isNews ? "/api/news" : "/api/blogs";
+            const status = filter === "all" ? "all" : filter;
+            const params = isNews ? {page: currentPage, limit, status} : {page: currentPage, limit, type: "blog", status};
+            const {data} = await axios.get(endpoint, {params});
 
-            console.log(`Fetching ${contentType} from: /api/blogs`);
-
-            // const {data} = await axios.get(endpoint, {params});
-
-            setBlogs(data.posts || []);
+            setBlogs(isNews ? data.articles || [] : data.posts || []);
             setTotalPosts(data.total || 0);
         } catch (err) {
             console.error(`Error fetching ${contentType}:`, err);
@@ -65,13 +59,20 @@ export default function BlogList({contentType = "blog"}) {
     const handlePrev = () => currentPage > 1 && setCurrentPage(currentPage - 1);
     const handleNext = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
 
+    const handleFilterChange = (nextFilter) => {
+        setFilter(nextFilter);
+        setCurrentPage(1);
+    };
+
     const handleDelete = (id) => {
-        toast.promise(axios.delete(`/api/blogs/${id}`), {
+        const endpoint = isNews ? `/api/news/${id}` : `/api/blogs/${id}`;
+
+        toast.promise(axios.delete(endpoint), {
             pending: "Deleting...",
             success: {
                 render() {
                     fetchContent();
-                    return `${contentType === "news" ? "News" : "Blog"} deleted successfully!`;
+                    return `${isNews ? "News" : "Blog"} deleted successfully!`;
                 },
             },
             error: "Failed to delete.",
@@ -86,6 +87,11 @@ export default function BlogList({contentType = "blog"}) {
             hour: "2-digit",
             minute: "2-digit",
         });
+    };
+
+    const getStatusLabel = (status) => {
+        const statusValue = status || "active";
+        return statusValue.charAt(0).toUpperCase() + statusValue.slice(1);
     };
 
     const renderPageNumbers = () => {
@@ -157,43 +163,40 @@ export default function BlogList({contentType = "blog"}) {
                     <button className="back-btn" onClick={() => navigate(-1)}>
                         ← Back
                     </button>
-                    <h2>{contentType === "news" ? "News Management" : "Blog Management"}</h2>
+                    <h2>{isNews ? "News Management" : "Blog Management"}</h2>
                 </div>
 
                 {/* Filters + Action */}
                 <div className="blog-toolbar">
                     <div className="blog-filters">
-                        {/* <button
+                        <button
                             className={`filter-btn ${filter === "all" ? "active" : ""}`}
-                            onClick={() => {
-                                setFilter("all");
-                                setCurrentPage(1);
-                            }}
+                            onClick={() => handleFilterChange("all")}
                         >
                             All
                         </button>
                         <button
                             className={`filter-btn ${filter === "active" ? "active" : ""}`}
-                            onClick={() => {
-                                setFilter("active");
-                                setCurrentPage(1);
-                            }}
+                            onClick={() => handleFilterChange("active")}
                         >
                             Active
                         </button>
                         <button
                             className={`filter-btn ${filter === "draft" ? "active" : ""}`}
-                            onClick={() => {
-                                setFilter("draft");
-                                setCurrentPage(1);
-                            }}
+                            onClick={() => handleFilterChange("draft")}
                         >
                             Draft
-                        </button> */}
+                        </button>
+                        <button
+                            className={`filter-btn ${filter === "archived" ? "active" : ""}`}
+                            onClick={() => handleFilterChange("archived")}
+                        >
+                            Archived
+                        </button>
                     </div>
 
                     <button className="create-btn" onClick={() => navigate(`/admin/create-${contentType}`)}>
-                        Create {contentType === "news" ? "News Article" : "Blog Post"}
+                        Create {isNews ? "News Article" : "Blog Post"}
                     </button>
                 </div>
 
@@ -203,6 +206,7 @@ export default function BlogList({contentType = "blog"}) {
                         <thead>
                             <tr>
                                 <th>Post title</th>
+                                <th>Status</th>
                                 <th>Date created</th>
                                 <th>Last modified</th>
                                 <th>Action</th>
@@ -213,6 +217,9 @@ export default function BlogList({contentType = "blog"}) {
                             {blogs.map((blog) => (
                                 <tr key={blog._id || blog.id}>
                                     <td>{blog.title}</td>
+                                    <td>
+                                        <span className={`status-badge status-badge--${blog.status || "active"}`}>{getStatusLabel(blog.status)}</span>
+                                    </td>
                                     <td>{formatDate(blog.createdAt)}</td>
                                     <td>{formatDate(blog.updatedAt || blog.createdAt)}</td>
                                     <td>
@@ -232,7 +239,7 @@ export default function BlogList({contentType = "blog"}) {
                             ))}
                             {blogs.length === 0 && (
                                 <tr>
-                                    <td colSpan="4" style={{textAlign: "center"}}>
+                                    <td colSpan="5" style={{textAlign: "center"}}>
                                         No {contentType === "news" ? "news" : "blog"} found for "{filter}".
                                     </td>
                                 </tr>

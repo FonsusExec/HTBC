@@ -6,6 +6,30 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+:root {
+    --htbc-toast-top-offset: 132px;
+}
+
+.Toastify__toast-container {
+    z-index: 99999 !important;
+}
+
+.Toastify__toast-container--top-left,
+.Toastify__toast-container--top-center,
+.Toastify__toast-container--top-right {
+    top: var(--htbc-toast-top-offset) !important;
+}
+
+@media (max-width: 900px) {
+    :root {
+        --htbc-toast-top-offset: 96px;
+    }
+
+    .Toastify__toast-container {
+        width: min(92vw, 360px);
+    }
+}
+
 /* body::before {
     content: "";
     position: fixed;

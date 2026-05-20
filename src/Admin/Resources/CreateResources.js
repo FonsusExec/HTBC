@@ -5,6 +5,7 @@ import "react-quill-new/dist/quill.snow.css";
 import slugify from "slugify";
 import {useNavigate} from "react-router-dom";
 import "./createResources.css";
+import {getAuthHeaders} from "../../utils/authHeaders";
 
 export default function CreateResources() {
     const navigate = useNavigate();
@@ -58,6 +59,7 @@ export default function CreateResources() {
         try {
             const res = await fetch("/api/resources", {
                 method: "POST",
+                headers: getAuthHeaders(),
                 body: formData,
             });
 

@@ -15,13 +15,16 @@ export default function PostDetail({contentType = "blog"}) {
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const isNews = contentType === "news";
+    const listPath = isNews ? "/admin/newslist" : "/admin/bloglist";
+    const publicPath = isNews ? "/news" : "/blog";
 
-    // Fetch post (unified endpoint since data is in one collection)
     useEffect(() => {
         const fetchPost = async () => {
             try {
                 setLoading(true);
-                const {data} = await axios.get(`/api/blogs/${id}`);
+                const endpoint = isNews ? `/api/news/${id}` : `/api/blogs/${id}`;
+                const {data} = await axios.get(endpoint);
                 setPost(data);
             } catch (err) {
                 console.error("Error fetching post:", err);
@@ -33,7 +36,7 @@ export default function PostDetail({contentType = "blog"}) {
         };
 
         fetchPost();
-    }, [id]);
+    }, [id, isNews]);
 
     if (loading)
         return (
@@ -47,14 +50,14 @@ export default function PostDetail({contentType = "blog"}) {
             <div className="admin-page">
                 <div className="admin-card">
                     <div className="card-header">
-                        <button className="back-btn" onClick={() => navigate(`/admin/${contentType}`)}>
+                        <button className="back-btn" onClick={() => navigate(listPath)}>
                             ← Back
                         </button>
                         <h2>Error</h2>
                     </div>
                     <div style={{padding: "40px", textAlign: "center"}}>
                         <p>Post not found or an error occurred.</p>
-                        <button className="btn save" onClick={() => navigate(`/${contentType}`)}>
+                        <button className="btn save" onClick={() => navigate(listPath)}>
                             Back to {contentType === "news" ? "News" : "Blog"}
                         </button>
                     </div>
@@ -65,9 +68,9 @@ export default function PostDetail({contentType = "blog"}) {
 
     // Dynamic SEO Helmet
     const pageTitle = post.seoTitle || post.title;
-    const pageDesc = post.metaDescription || post.excerpt || "";
+    const pageDesc = post.metaDescription || post.excerpt || post.description || "";
     const ogImage = post.imageUrl || "https://yourdomain.com/default-og.jpg";
-    const canonical = `${window.location.origin}/${contentType}/${id}`;
+    const canonical = `${window.location.origin}${publicPath}/${id}`;
 
     return (
         <>
@@ -93,7 +96,7 @@ export default function PostDetail({contentType = "blog"}) {
                 <div className="admin-card">
                     {/* Header */}
                     <div className="card-header">
-                        <button className="back-btn" onClick={() => navigate(`/${contentType}`)}>
+                        <button className="back-btn" onClick={() => navigate(listPath)}>
                             ← Back to {contentType === "news" ? "News" : "Blog"}
                         </button>
                         <h2>{post.title}</h2>
@@ -134,7 +137,7 @@ export default function PostDetail({contentType = "blog"}) {
 
                         {/* Footer */}
                         <div className="form-actions">
-                            <button className="btn cancel" onClick={() => navigate(`/${contentType}`)}>
+                            <button className="btn cancel" onClick={() => navigate(listPath)}>
                                 Back to List
                             </button>
                             <button className="btn save" onClick={() => navigate(`/admin/edit-${contentType}/${post._id}`)}>

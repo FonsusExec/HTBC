@@ -11,14 +11,34 @@ import {useCart} from "../../CartContext";
 import "../CheckOutPage/checkOut.css";
 import {useAuth} from "../../AuthContext";
 
-const stripePromise = loadStripe("pk_test_51SUrTpIFfcTcOPno0d9Cc86ZlM55AROCNRZS2dFCrPLdjVplYCNLw3GUmwufxG6ocTdMNtd4LI7qhaOh8NPjl27E00LQQs8RLF");
-const paypalClientId = "YOUR_PAYPAL_CLIENT_ID";
+const stripePublishableKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : Promise.resolve(null);
+const paypalClientId = process.env.REACT_APP_PAYPAL_CLIENT_ID || "";
+
+const getOrderItems = (cart = []) =>
+    cart.map((item) => ({
+        productId: item._id,
+        name: item.name,
+        qty: item.qty,
+        price: parseFloat(item.price) || 0,
+        image: item.image,
+    }));
+
+const releaseInventoryReservation = async (reservationId) => {
+    if (!reservationId) return;
+
+    try {
+        await axios.post(`/api/payment-reservations/${reservationId}/release`);
+    } catch (err) {
+        console.warn("Unable to release inventory reservation:", err.response?.data || err.message);
+    }
+};
 
 // Stripe Submit Button (unchanged - omitted for brevity)
 // ----------------------------------------------------------------
 // Stripe Submit Button (Full Updated Version)
 // ----------------------------------------------------------------
-function StripeSubmitButton({formData, amount, cart, clearCart, navigate, isReady}) {
+function StripeSubmitButton({formData, amount, cart, clearCart, navigate, isReady, reservationId}) {
     const stripe = useStripe();
     const elements = useElements();
     const [isProcessing, setIsProcessing] = useState(false);
@@ -47,6 +67,17 @@ function StripeSubmitButton({formData, amount, cart, clearCart, navigate, isRead
             return;
         }
 
+        const token = localStorage.getItem("token");
+        if (!token) {
+            await releaseInventoryReservation(reservationId);
+            toast.error("Please log in to complete payment.");
+            navigate("/login");
+            setIsProcessing(false);
+            return;
+        }
+
+        let paymentSucceeded = false;
+
         try {
             const {error: submitError} = await elements.submit();
             if (submitError) {
@@ -68,38 +99,23 @@ function StripeSubmitButton({formData, amount, cart, clearCart, navigate, isRead
             if (stripeError) {
                 console.error("Stripe confirmPayment error:", stripeError);
                 setError(stripeError.message);
+                await releaseInventoryReservation(reservationId);
                 toast.error(stripeError.message, {position: "top-right", autoClose: 3000});
                 setIsProcessing(false);
                 return;
             }
 
             if (paymentIntent && paymentIntent.status === "succeeded") {
-                // Slim items for order (avoid validation errors)
-                const orderItems = cart.map((item) => ({
-                    name: item.name,
-                    qty: item.qty,
-                    price: parseFloat(item.price) || 0,
-                }));
+                paymentSucceeded = true;
+                const orderItems = getOrderItems(cart);
 
                 const payload = {
                     shipping: formData,
                     items: orderItems,
                     total: validTotal,
                     paymentId: paymentIntent.id,
+                    reservationId,
                 };
-
-                console.log("🚀 Order POST payload:", payload); // Debug: Check data
-                console.log("Token in localStorage:", localStorage.getItem("token")); // Debug: Auth
-                console.log("Axios header:", axios.defaults.headers.common.Authorization); // Debug: Bearer?
-
-                const token = localStorage.getItem("token");
-                if (!token) {
-                    toast.error("Please log in to complete payment.");
-                    navigate("/login");
-                    return;
-                }
-
-                console.log("Token before POST:", token ? "Present" : "Missing");
 
                 // Create order on backend
                 const {data: orderResponse} = await axios.post("/api/create-order", payload, {
@@ -107,8 +123,6 @@ function StripeSubmitButton({formData, amount, cart, clearCart, navigate, isRead
                         Authorization: `Bearer ${token}`, // Ensures it's sent
                     },
                 });
-                console.log("Order response:", orderResponse); // Debug: Success?
-
                 if (!orderResponse.success || !orderResponse.orderId) {
                     throw new Error("Failed to create order on server.");
                 }
@@ -130,6 +144,9 @@ function StripeSubmitButton({formData, amount, cart, clearCart, navigate, isRead
             }
         } catch (err) {
             console.error("Full Error in handleStripeSubmit:", err);
+            if (!paymentSucceeded) {
+                await releaseInventoryReservation(reservationId);
+            }
             setError("An unexpected error occurred.");
             toast.error(err.response?.data?.error || "Payment failed. Please try again.", {position: "top-right", autoClose: 3000});
         }
@@ -169,13 +186,25 @@ function ApplePayButton({formData, amount, cart, clearCart, navigate, stripe}) {
             return;
         }
 
+        const token = localStorage.getItem("token");
+        if (!token) {
+            toast.error("Please log in to complete payment.");
+            navigate("/login");
+            setIsProcessing(false);
+            return;
+        }
+
+        let appleReservationId = "";
+        let paymentSucceeded = false;
+
         try {
             toast.info("Processing Apple Pay...");
 
             // Create intent
             const amountInCents = Math.round(validTotal * 100);
-            const {data} = await axios.post("/api/create-payment-intent", {amount: amountInCents});
+            const {data} = await axios.post("/api/create-payment-intent", {amount: amountInCents, items: getOrderItems(cart)});
             const {clientSecret} = data;
+            appleReservationId = data.reservationId || "";
 
             if (!clientSecret) throw new Error("No client secret");
 
@@ -193,27 +222,16 @@ function ApplePayButton({formData, amount, cart, clearCart, navigate, stripe}) {
             if (error) throw error;
 
             if (paymentIntent.status === "succeeded") {
-                const orderItems = cart.map((item) => ({
-                    name: item.name,
-                    qty: item.qty,
-                    price: parseFloat(item.price) || 0,
-                }));
+                paymentSucceeded = true;
+                const orderItems = getOrderItems(cart);
 
                 const payload = {
                     shipping: formData,
                     items: orderItems,
                     total: validTotal,
                     paymentId: paymentIntent.id,
+                    reservationId: appleReservationId,
                 };
-
-                const token = localStorage.getItem("token");
-                if (!token) {
-                    toast.error("Please log in to complete payment.");
-                    navigate("/login");
-                    return;
-                }
-
-                console.log("Token before POST:", token ? "Present" : "Missing");
 
                 // Create order on backend
                 const {data: orderResponse} = await axios.post("/api/create-order", payload, {
@@ -221,8 +239,6 @@ function ApplePayButton({formData, amount, cart, clearCart, navigate, stripe}) {
                         Authorization: `Bearer ${token}`, // Ensures it's sent
                     },
                 });
-                console.log("Order response:", orderResponse); // Debug: Success?
-
                 if (!orderResponse.success) throw new Error("Order creation failed");
 
                 clearCart();
@@ -230,6 +246,9 @@ function ApplePayButton({formData, amount, cart, clearCart, navigate, stripe}) {
                 navigate("/order-confirmation", {state: {orderId: orderResponse.orderId, shipping: formData, cart, total: validTotal, paymentId: paymentIntent.id}});
             }
         } catch (err) {
+            if (!paymentSucceeded) {
+                await releaseInventoryReservation(appleReservationId);
+            }
             toast.error(err.message || "Apple Pay failed.");
         }
 
@@ -254,7 +273,7 @@ export default function CheckoutScreen() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const {isLoggedIn} = useAuth();
+    const {isLoggedIn, loading: authLoading} = useAuth();
 
     const cartItemsCount = getCartCount();
     const cartItemsTotal = getCartTotal();
@@ -262,6 +281,7 @@ export default function CheckoutScreen() {
     const [paymentMethod, setPaymentMethod] = useState("");
     const [isStripeReady, setIsStripeReady] = useState(false);
     const [clientSecret, setClientSecret] = useState("");
+    const [reservationId, setReservationId] = useState("");
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [isApplePaySupported, setIsApplePaySupported] = useState(false); // Concise state
 
@@ -322,19 +342,18 @@ export default function CheckoutScreen() {
                 const rawTotal = parseFloat(cartItemsTotal) || 0;
                 const amountInCents = Math.round(rawTotal * 100);
 
-                console.log("Stripe init: cartTotal =", rawTotal, "amountInCents =", amountInCents);
-
                 if (amountInCents <= 0) {
                     toast.error("Cart total must be greater than $0.00 to use Stripe.", {position: "top-right", autoClose: 3000});
                     setClientSecret("");
+                    setReservationId("");
                     return;
                 }
 
-                const {data} = await axios.post("/api/create-payment-intent", {amount: amountInCents});
-                console.log("Intent response:", data); // Debug: Check clientSecret
+                const {data} = await axios.post("/api/create-payment-intent", {amount: amountInCents, items: getOrderItems(cart)});
 
                 if (data && data.clientSecret) {
                     setClientSecret(data.clientSecret);
+                    setReservationId(data.reservationId || "");
                     setIsStripeReady(true); // ← AUTO-SET: Assume ready if secret exists
                 } else {
                     throw new Error("No client secret returned");
@@ -343,14 +362,17 @@ export default function CheckoutScreen() {
                 console.error("Stripe init error:", err.response?.data || err);
                 toast.error(err.response?.data?.error || "Failed to initialize Stripe.", {position: "top-right", autoClose: 3000});
                 setClientSecret("");
+                setReservationId("");
                 setIsStripeReady(false);
             }
         };
 
         initStripe();
-    }, [paymentMethod, cartItemsTotal]);
+    }, [paymentMethod, cartItemsTotal, cart]);
 
     useEffect(() => {
+        if (authLoading) return;
+
         const token = localStorage.getItem("token");
         if (!isLoggedIn || !token) {
             // ← ADD: Check token too
@@ -359,8 +381,7 @@ export default function CheckoutScreen() {
             return;
         }
         // ...
-        console.log("User logged in - proceeding to checkout");
-    }, [isLoggedIn, navigate]);
+    }, [authLoading, isLoggedIn, navigate]);
 
     const handleInputChange = (e) => {
         const {name, value} = e.target;
@@ -373,6 +394,15 @@ export default function CheckoutScreen() {
     };
 
     const handleApplePaySelect = () => setPaymentMethod("applepay");
+
+    const handlePaymentModalClose = async () => {
+        await releaseInventoryReservation(reservationId);
+        setReservationId("");
+        setClientSecret("");
+        setIsStripeReady(false);
+        setShowPaymentModal(false);
+        setPaymentMethod("");
+    };
 
     const StripeElementsWrapper = ({children}) =>
         clientSecret ? (
@@ -387,7 +417,7 @@ export default function CheckoutScreen() {
                 <header className="header">
                     <button className="back-btn" onClick={() => navigate("/cart")}>
                         <span className="arrow-icon" style={{marginRight: "10px"}}>
-                            ◀
+                            {"<"}
                         </span>
                         Back to cart
                     </button>
@@ -403,37 +433,83 @@ export default function CheckoutScreen() {
                     <div className="forms-section">
                         <form>
                             <div className="shipping-info">
-                                <h2>Shipping Information</h2>
+                                <div className="checkout-section-heading">
+                                    <span>Step 1</span>
+                                    <h2>Shipping Information</h2>
+                                </div>
                                 <div className="form-row">
                                     <div className="input-group">
-                                        <label>First Name</label>
-                                        <input type="text" name="firstName" placeholder="Enter" value={formData.firstName} onChange={handleInputChange} />
+                                        <label htmlFor="checkout-first-name">First Name</label>
+                                        <input
+                                            id="checkout-first-name"
+                                            type="text"
+                                            name="firstName"
+                                            placeholder="Enter first name"
+                                            value={formData.firstName}
+                                            onChange={handleInputChange}
+                                            autoComplete="given-name"
+                                            required
+                                        />
                                     </div>
                                     <div className="input-group">
-                                        <label>Last Name</label>
-                                        <input type="text" name="lastName" placeholder="Enter" value={formData.lastName} onChange={handleInputChange} />
+                                        <label htmlFor="checkout-last-name">Last Name</label>
+                                        <input
+                                            id="checkout-last-name"
+                                            type="text"
+                                            name="lastName"
+                                            placeholder="Enter last name"
+                                            value={formData.lastName}
+                                            onChange={handleInputChange}
+                                            autoComplete="family-name"
+                                        />
                                     </div>
                                     <div className="input-group">
-                                        <label>Email</label>
-                                        <input type="email" name="email" placeholder="Enter" value={formData.email} onChange={handleInputChange} />
+                                        <label htmlFor="checkout-email">Email</label>
+                                        <input
+                                            id="checkout-email"
+                                            type="email"
+                                            name="email"
+                                            placeholder="name@example.com"
+                                            value={formData.email}
+                                            onChange={handleInputChange}
+                                            autoComplete="email"
+                                            required
+                                        />
                                     </div>
                                 </div>
                                 <div className="input-group full-width">
-                                    <label>Shipping Address</label>
-                                    <input type="text" name="shippingAddress" placeholder="Enter" value={formData.shippingAddress} onChange={handleInputChange} />
+                                    <label htmlFor="checkout-address">Shipping Address</label>
+                                    <input
+                                        id="checkout-address"
+                                        type="text"
+                                        name="shippingAddress"
+                                        placeholder="Street address"
+                                        value={formData.shippingAddress}
+                                        onChange={handleInputChange}
+                                        autoComplete="street-address"
+                                        required
+                                    />
                                 </div>
                                 <div className="form-row">
                                     <div className="input-group">
-                                        <label>House Number</label>
-                                        <input type="text" name="houseNumber" placeholder="Enter" value={formData.houseNumber} onChange={handleInputChange} />
+                                        <label htmlFor="checkout-house-number">House Number</label>
+                                        <input
+                                            id="checkout-house-number"
+                                            type="text"
+                                            name="houseNumber"
+                                            placeholder="Apt, suite, unit"
+                                            value={formData.houseNumber}
+                                            onChange={handleInputChange}
+                                            autoComplete="address-line2"
+                                        />
                                     </div>
                                     <div className="input-group">
-                                        <label>State</label>
-                                        <input type="text" name="state" placeholder="Enter" value={formData.state} onChange={handleInputChange} />
+                                        <label htmlFor="checkout-state">State</label>
+                                        <input id="checkout-state" type="text" name="state" placeholder="State" value={formData.state} onChange={handleInputChange} autoComplete="address-level1" />
                                     </div>
                                     <div className="input-group">
-                                        <label>Zip</label>
-                                        <input type="text" name="zip" placeholder="Enter" value={formData.zip} onChange={handleInputChange} />
+                                        <label htmlFor="checkout-zip">Zip</label>
+                                        <input id="checkout-zip" type="text" name="zip" placeholder="Zip code" value={formData.zip} onChange={handleInputChange} autoComplete="postal-code" />
                                     </div>
                                 </div>
                             </div>
@@ -449,13 +525,13 @@ export default function CheckoutScreen() {
                         </div>
                         <div className="summary-details">
                             <p className="delivery-charges">
-                                Delivery Charges: <span>Add your delivery address to see delivery charges</span>
+                                Delivery Charges: <span>Delivery charges are included in the total</span>
                             </p>
                             <p className="subtotal">
                                 Subtotal: <span>${cartItemsTotal.toFixed(2)}</span>
                             </p>
                             <p className="total">
-                                Total: <span>${cartItemsTotal.toFixed(2)}</span> <small>(Excluding delivery charges)</small>
+                                Total: <span>${cartItemsTotal.toFixed(2)}</span> <small>(Including delivery charges)</small>
                             </p>
                         </div>
 
@@ -485,8 +561,8 @@ export default function CheckoutScreen() {
                     <div className="payment-modal">
                         <div className="modal-header">
                             <h3>Enter Card Details</h3>
-                            <button className="modal-close" onClick={() => setShowPaymentModal(false)}>
-                                ×
+                            <button className="modal-close" onClick={handlePaymentModalClose}>
+                                x
                             </button>
                         </div>
                         <div className="modal-body">
@@ -496,27 +572,22 @@ export default function CheckoutScreen() {
                                     <PaymentElement
                                         onReady={() => {
                                             setIsStripeReady(true);
-                                            console.log("PaymentElement ready"); // Debug
                                         }}
                                         onLoadError={() => {
                                             setIsStripeReady(false);
-                                            console.log("PaymentElement load error"); // Debug
                                         }}
                                     />
                                     {!isStripeReady && <p>Loading payment form...</p>}
                                 </div>
 
-                                {/* Debug log in render */}
-                                {console.log("Modal render: clientSecret =", !!clientSecret, "isReady =", isStripeReady)}
-
-                                <StripeSubmitButton formData={formData} amount={cartItemsTotal} cart={cart} clearCart={clearCart} navigate={navigate} isReady={isStripeReady} />
+                                <StripeSubmitButton formData={formData} amount={cartItemsTotal} cart={cart} clearCart={clearCart} navigate={navigate} isReady={isStripeReady} reservationId={reservationId} />
                             </StripeElementsWrapper>
                         </div>
                     </div>
                 </div>
             )}
 
-            {paymentMethod === "paypal" && (
+            {paymentMethod === "paypal" && paypalClientId && (
                 <PayPalScriptProvider options={{"client-id": paypalClientId}}>
                     <div className="paypal-payment">
                         <PayPalButtons

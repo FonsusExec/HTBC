@@ -19,23 +19,25 @@ export default function EditNews() {
     const [metaDescription, setMetaDescription] = useState("");
     const [keywords, setKeywords] = useState("");
     const [slug, setSlug] = useState("");
+    const [status, setStatus] = useState("active");
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [currentImage, setCurrentImage] = useState(""); // Preview current image
     const [mediaPreview, setMediaPreview] = useState("");
 
-    // Fetch post on mount (use /api/blogs/:id since data is merged)
+    // Fetch post on mount
     useEffect(() => {
         const fetchPost = async () => {
             try {
                 setLoading(true);
-                const {data} = await axios.get(`/api/blogs/${id}`); // ← Use /api/blogs/:id
+                const {data} = await axios.get(`/api/news/${id}`);
                 setTitle(data.title);
                 setBody(data.content || ""); // Full content as HTML
                 setSeoTitle(data.seoTitle || data.title || "");
                 setMetaDescription(data.metaDescription || "");
                 setKeywords(data.keywords ? data.keywords.join(", ") : "");
                 setSlug(data.slug || "");
+                setStatus(data.status || "active");
                 setCurrentImage(data.imageUrl || "");
             } catch (err) {
                 console.error("Error fetching news:", err);
@@ -81,11 +83,10 @@ export default function EditNews() {
         formData.append("metaDescription", metaDescription);
         formData.append("keywords", keywords);
         formData.append("slug", slug || slugify(title, {lower: true, strict: true}));
-        formData.append("type", "news"); // Ensure type is news
+        formData.append("status", status);
 
         try {
-            await axios.put(`/api/blogs/${id}`, formData, {
-                // ← Use /api/blogs/:id for update
+            await axios.put(`/api/news/${id}`, formData, {
                 headers: {"Content-Type": "multipart/form-data"},
             });
 
@@ -168,6 +169,15 @@ export default function EditNews() {
                         </div>
 
                         <div className="form-group">
+                            <label>Status</label>
+                            <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                                <option value="active">Active - visible on site</option>
+                                <option value="draft">Draft - admin only</option>
+                                <option value="archived">Archived - hidden</option>
+                            </select>
+                        </div>
+
+                        <div className="form-group">
                             <label>Media (Optional - replaces current)</label>
                             <input type="file" accept="image/*" onChange={(e) => setMedia(e.target.files?.[0] || null)} />
                             {(mediaPreview || currentImage) && (
@@ -193,7 +203,7 @@ export default function EditNews() {
                     </div>
 
                     <div className="form-actions">
-                        <button type="button" className="btn cancel" onClick={() => navigate("/admin/news")}>
+                        <button type="button" className="btn cancel" onClick={() => navigate("/admin/newslist")}>
                             Cancel
                         </button>
                         <button type="submit" className="btn save" disabled={saving}>

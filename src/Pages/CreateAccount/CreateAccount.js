@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import "../CreateAccount/createAccount.css";
 import {useAuth} from "../../AuthContext"; // Adjust path
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import {GoogleLogin} from "@react-oauth/google";
 import axios from "axios";
@@ -13,7 +13,7 @@ export default function CreateAccount() {
         password: "",
         confirmPassword: "",
     });
-    const {signup} = useAuth(); // your existing email/password signup function
+    const {signup, googleLogin} = useAuth(); // your existing email/password signup function
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -54,27 +54,16 @@ export default function CreateAccount() {
     // Google login handler
     const handleGoogleLogin = async (credentialResponse) => {
         try {
-            const token = credentialResponse.credential; // JWT from Google
-
-            // Decode JWT to get user info
-            const base64Url = token.split(".")[1];
-            const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-            const jsonPayload = decodeURIComponent(
-                atob(base64)
-                    .split("")
-                    .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-                    .join("")
-            );
-            const googleUser = JSON.parse(jsonPayload);
-
-            // Send to backend
-            const response = await axios.post("http://localhost:5000/api/users/google-auth", {
-                name: googleUser.name,
-                email: googleUser.email,
-                googleId: googleUser.sub,
+            const response = await axios.post("/api/users/google-auth", {
+                credential: credentialResponse.credential,
             });
 
-            localStorage.setItem("userInfo", JSON.stringify(response.data.user));
+            if (!response.data.success) {
+                toast.error(response.data.message || "Google login failed");
+                return;
+            }
+
+            googleLogin(response.data.user, response.data.token);
             toast.success("Logged in with Google successfully!");
             navigate("/"); // navigate after login
         } catch (err) {
@@ -83,7 +72,7 @@ export default function CreateAccount() {
     };
 
     return (
-        <div className="login-container">
+        <div className="login-container signup-page-container">
             <div className="signup-form">
                 <h2>Create an Account</h2>
                 <form className="form" onSubmit={submitHandler}>
@@ -95,7 +84,7 @@ export default function CreateAccount() {
                         {isSubmitting ? "Creating..." : "Sign Up"}
                     </button>
                     <div className="login-link">
-                        Already have an account? <a href="/login">Login</a>
+                        Already have an account? <Link to="/login">Login</Link>
                     </div>
                 </form>
 

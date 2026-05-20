@@ -19,7 +19,12 @@ const newsArticleSchema = new mongoose.Schema({
     seoTitle: String,
     metaDescription: String,
     keywords: [String],
-    slug: {type: String, unique: true},
+    slug: {type: String, unique: true, sparse: true},
+    status: {
+        type: String,
+        enum: ["active", "draft", "archived"],
+        default: "active",
+    },
 });
 
 export default mongoose.model("NewsArticle", newsArticleSchema);

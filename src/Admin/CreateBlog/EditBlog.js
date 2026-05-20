@@ -14,7 +14,7 @@ export default function EditBlog() {
     const [body, setBody] = useState(""); // Rich HTML
     const [media, setMedia] = useState(null); // New media file (optional)
     const [category, setCategory] = useState("");
-    const [status, setStatus] = useState("active"); // Active/Draft
+    const [status, setStatus] = useState("active");
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [currentImage, setCurrentImage] = useState(""); // Preview current image
@@ -72,6 +72,7 @@ export default function EditBlog() {
         formData.append("body", body); // HTML from Quill
         formData.append("category", category);
         formData.append("status", status);
+        formData.append("type", "blog");
         if (media) formData.append("media", media); // Optional new image
 
         try {
@@ -117,7 +118,7 @@ export default function EditBlog() {
             <div className="admin-card">
                 {/* Header */}
                 <div className="card-header">
-                    <button className="back-btn" onClick={() => navigate("/admin/blogs")}>
+                    <button className="back-btn" onClick={() => navigate("/admin/bloglist")}>
                         ← Back to List
                     </button>
                     <h2>Edit Post</h2>
@@ -145,8 +146,9 @@ export default function EditBlog() {
                         <div className="form-group">
                             <label>Status</label>
                             <select value={status} onChange={(e) => setStatus(e.target.value)}>
-                                <option value="draft">Draft</option>
-                                <option value="active">Active</option>
+                                <option value="active">Active - visible on site</option>
+                                <option value="draft">Draft - admin only</option>
+                                <option value="archived">Archived - hidden</option>
                             </select>
                         </div>
 

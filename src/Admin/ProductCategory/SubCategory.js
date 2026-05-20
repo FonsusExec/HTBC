@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import "./category.css";
+import {getAuthHeaders} from "../../utils/authHeaders";
 
 const SubCategoryForm = () => {
     const navigate = useNavigate();
@@ -62,7 +63,7 @@ const SubCategoryForm = () => {
         try {
             const res = await fetch(`/api/categories/${selectedCategoryId}/subcategories`, {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
+                headers: getAuthHeaders({"Content-Type": "application/json"}),
                 body: JSON.stringify(payload),
             });
 

@@ -6,6 +6,7 @@ import path from "path";
 import {dirname} from "path";
 import {fileURLToPath} from "url";
 import ImpactStory from "../models/impactStoryModel.js";
+import auth, {requireSuperAdmin} from "../middleware/auth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -46,6 +47,8 @@ router.get(
 
 router.post(
     "/",
+    auth,
+    requireSuperAdmin,
     upload.single("image"),
     expressAsyncHandler(async (req, res) => {
         const {title, description} = req.body;
@@ -75,6 +78,8 @@ router.get(
 
 router.put(
     "/:id",
+    auth,
+    requireSuperAdmin,
     upload.single("image"),
     expressAsyncHandler(async (req, res) => {
         const {title, description} = req.body;
@@ -97,6 +102,8 @@ router.put(
 
 router.delete(
     "/:id",
+    auth,
+    requireSuperAdmin,
     expressAsyncHandler(async (req, res) => {
         const story = await ImpactStory.findByIdAndDelete(req.params.id);
         if (!story) return res.status(404).json({message: "Impact story not found"});

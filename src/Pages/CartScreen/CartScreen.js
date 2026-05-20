@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React from "react";
 import {toast, ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {useNavigate} from "react-router-dom";
@@ -6,7 +6,7 @@ import "../CartScreen/cartScreen.css";
 import {useCart} from "../../CartContext";
 
 export default function CartScreen() {
-    const {cart, removeFromCart, getCartCount, getCartTotal, clearCart} = useCart();
+    const {cart, removeFromCart, updateQty, getCartCount, getCartTotal} = useCart();
     const cartItemsCount = getCartCount();
     const cartItemsPrice = getCartTotal();
 
@@ -14,6 +14,18 @@ export default function CartScreen() {
     const handleRemoveFromCart = (id) => {
         removeFromCart(id);
         toast.info("Item removed from cart!");
+    };
+
+    const handleQuantityChange = (item, nextQty) => {
+        const stock = Number(item.stock);
+        const safeQty = Math.max(1, nextQty);
+
+        if (Number.isFinite(stock) && stock >= 0 && safeQty > stock) {
+            toast.error(`Only ${stock} ${item.name} left in stock.`);
+            return;
+        }
+
+        updateQty(item._id, safeQty);
     };
 
     const continueToCheckout = () => {
@@ -28,11 +40,14 @@ export default function CartScreen() {
         navigate("/all-products"); // Or to products list
     };
 
+    const formatCurrency = (value) => `$${(parseFloat(value) || 0).toFixed(2)}`;
+
     if (cartItemsCount === 0) {
         return (
             <div className="cart-page-container">
                 <div className="empty-cart">
                     <h2>Your cart is empty</h2>
+                    <p>Browse the shop and add items you would like to purchase.</p>
                     <button onClick={continueShopping}>Continue Shopping</button>
                 </div>
                 <ToastContainer />
@@ -47,7 +62,7 @@ export default function CartScreen() {
                 <header className="header">
                     <button className="nav-btn" onClick={continueShopping}>
                         <span className="arrow-icon" style={{marginRight: "10px"}}>
-                            ◀
+                            {"<"}
                         </span>
                         Continue Shopping
                     </button>
@@ -76,15 +91,27 @@ export default function CartScreen() {
                                 <div key={item._id} className="item-row">
                                     <div className="item-info">
                                         <img src={item.image} alt={item.name} className="item-image" />
-                                        <span className="item-name">{item.name}</span>
+                                        <div className="item-copy">
+                                            <span className="item-name">{item.name}</span>
+                                            <span className="item-unit-price">{formatCurrency(item.price)} each</span>
+                                        </div>
                                     </div>
-                                    <div className="item-quantity">{item.qty}</div>
+                                    <div className="item-quantity" aria-label={`Quantity for ${item.name}`}>
+                                        <button type="button" onClick={() => handleQuantityChange(item, item.qty - 1)} disabled={item.qty <= 1} aria-label={`Decrease quantity for ${item.name}`}>
+                                            -
+                                        </button>
+                                        <span>{item.qty}</span>
+                                        <button type="button" onClick={() => handleQuantityChange(item, item.qty + 1)} aria-label={`Increase quantity for ${item.name}`}>
+                                            +
+                                        </button>
+                                    </div>
                                     <div className="item-price">
-                                        ${item.price} x {item.qty}
+                                        <span>Line Total</span>
+                                        <strong>{formatCurrency(item.price * item.qty)}</strong>
                                     </div>
                                     <div className="item-action">
                                         <button className="remove-btn" onClick={() => handleRemoveFromCart(item._id)}>
-                                            Remove Item
+                                            Remove
                                         </button>
                                     </div>
                                 </div>
@@ -105,10 +132,10 @@ export default function CartScreen() {
                                 Delivery Charges: <span>Add your address to see delivery charges</span>
                             </p>
                             <p className="subtotal">
-                                Subtotal: <span>${cartItemsPrice.toFixed(2)}</span>
+                                Subtotal: <span>{formatCurrency(cartItemsPrice)}</span>
                             </p>
                             <p className="total">
-                                Total: <span>${cartItemsPrice.toFixed(2)}</span> <small>(Excluding delivery charges)</small>
+                                Total: <span>{formatCurrency(cartItemsPrice)}</span> <small>(Excluding delivery charges)</small>
                             </p>
                         </div>
                         <button className="continue-checkout-btn" onClick={continueToCheckout}>

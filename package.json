@@ -37,7 +37,7 @@
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
-        "postbuild": "cp public/_headers build/_headers",
+        "postbuild": "node scripts/copyHeaders.js",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
     },

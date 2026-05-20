@@ -6,6 +6,7 @@ import slugify from "slugify";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import "./createNews.css";
+import {getAuthHeaders} from "../../utils/authHeaders";
 
 export default function CreateNews() {
     const navigate = useNavigate();
@@ -16,8 +17,11 @@ export default function CreateNews() {
     const [metaDescription, setMetaDescription] = useState("");
     const [keywords, setKeywords] = useState("");
     const [slug, setSlug] = useState("");
+    const [status, setStatus] = useState("active");
     const [loading, setLoading] = useState(false);
     const [fetchingFull, setFetchingFull] = useState(false);
+    const [media, setMedia] = useState(null);
+    const [mediaPreview, setMediaPreview] = useState("");
 
     // Auto-population states
     const [sources, setSources] = useState([]);
@@ -35,6 +39,18 @@ export default function CreateNews() {
                 toast.error("Could not load news sources");
             });
     }, []);
+
+    useEffect(() => {
+        if (!media) {
+            setMediaPreview("");
+            return;
+        }
+
+        const previewUrl = URL.createObjectURL(media);
+        setMediaPreview(previewUrl);
+
+        return () => URL.revokeObjectURL(previewUrl);
+    }, [media]);
 
     // Load headlines when source changes
     useEffect(() => {
@@ -116,17 +132,28 @@ export default function CreateNews() {
         setLoading(true);
 
         const formData = new FormData();
+        const selectedSourceName = sources.find((source) => source.value === selectedSource)?.name || "Admin Curated";
+        const selectedHeadline = headlines.find((headline) => headline.url === selectedHeadlineUrl);
+
         formData.append("title", title);
         formData.append("body", body);
-        formData.append("type", "news");
+        formData.append("source", selectedSourceName);
+        formData.append("url", selectedHeadlineUrl);
+        formData.append("imageUrl", selectedHeadline?.imageUrl || "");
+        formData.append("status", status);
         formData.append("seoTitle", seoTitle || title);
         formData.append("metaDescription", metaDescription);
         formData.append("keywords", keywords);
         formData.append("slug", slug || slugify(title, {lower: true, strict: true}));
 
+        if (media) {
+            formData.append("media", media);
+        }
+
         try {
-            const res = await fetch("/api/blogs", {
+            const res = await fetch("/api/news", {
                 method: "POST",
+                headers: getAuthHeaders(),
                 body: formData,
             });
 
@@ -225,6 +252,26 @@ export default function CreateNews() {
                         <div className="form-group">
                             <label>Slug (Auto-generated)</label>
                             <input type="text" placeholder="Auto-filled from title" value={slug} onChange={(e) => setSlug(e.target.value)} />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Status</label>
+                            <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                                <option value="active">Active - visible on site</option>
+                                <option value="draft">Draft - admin only</option>
+                                <option value="archived">Archived - hidden</option>
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Media (optional)</label>
+                            <input type="file" accept="image/*" onChange={(e) => setMedia(e.target.files?.[0] || null)} />
+                            {media && (
+                                <div className="admin-image-preview">
+                                    <p>Image Preview: {media.name}</p>
+                                    <img src={mediaPreview} alt="Selected news media preview" />
+                                </div>
+                            )}
                         </div>
                     </div>
 

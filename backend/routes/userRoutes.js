@@ -6,6 +6,8 @@ import {generateToken} from "../utils.js";
 import jwt from "jsonwebtoken";
 import passport from "passport";
 import {googleAuth} from "../controllers/authControllers.js";
+import crypto from "crypto";
+import {sendPasswordResetEmail} from "../utils/mailer.js";
 
 const userRouter = express.Router(); // Use express.Router()
 
@@ -22,6 +24,11 @@ export const auth = (req, res, next) => {
     } catch (err) {
         res.status(401).json({message: "Invalid token"});
     }
+};
+
+const getClientUrl = (req) => {
+    const fallbackUrl = req.headers.origin || "http://localhost:3000";
+    return (process.env.CLIENT_URL || process.env.FRONTEND_URL || fallbackUrl).replace(/\/$/, "");
 };
 
 // Signup Route (POST /api/users/signup)
@@ -89,6 +96,83 @@ userRouter.post(
         }
 
         res.status(401).send({message: "Invalid email or password"});
+    })
+);
+
+userRouter.post(
+    "/forgot-password",
+    expressAsyncHandler(async (req, res) => {
+        const email = String(req.body.email || "").trim().toLowerCase();
+
+        if (!email) {
+            return res.status(400).json({message: "Email address is required"});
+        }
+
+        const user = await User.findOne({email});
+        const responseMessage = "If an account exists for that email, a password reset link has been sent.";
+
+        if (!user) {
+            return res.json({message: responseMessage});
+        }
+
+        const resetToken = crypto.randomBytes(32).toString("hex");
+        const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+        user.resetPasswordToken = hashedToken;
+        user.resetPasswordExpires = Date.now() + 60 * 60 * 1000;
+        await user.save();
+
+        const resetUrl = `${getClientUrl(req)}/#/reset-password/${resetToken}`;
+        const emailResult = await sendPasswordResetEmail({
+            userEmail: user.email,
+            userName: user.name,
+            resetUrl,
+        });
+
+        if (!emailResult.success) {
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpires = undefined;
+            await user.save();
+            return res.status(500).json({message: "Unable to send reset email right now. Please try again later."});
+        }
+
+        res.json({message: responseMessage});
+    })
+);
+
+userRouter.post(
+    "/reset-password/:token",
+    expressAsyncHandler(async (req, res) => {
+        const {password, confirmPassword} = req.body;
+
+        if (!password || !confirmPassword) {
+            return res.status(400).json({message: "Password and confirm password are required"});
+        }
+
+        if (password !== confirmPassword) {
+            return res.status(400).json({message: "Passwords do not match"});
+        }
+
+        if (password.length < 6) {
+            return res.status(400).json({message: "Password must be at least 6 characters"});
+        }
+
+        const hashedToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
+        const user = await User.findOne({
+            resetPasswordToken: hashedToken,
+            resetPasswordExpires: {$gt: Date.now()},
+        });
+
+        if (!user) {
+            return res.status(400).json({message: "Password reset link is invalid or has expired"});
+        }
+
+        user.password = await bcrypt.hash(password, 10);
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+        await user.save();
+
+        res.json({message: "Password reset successfully. You can now log in."});
     })
 );
 

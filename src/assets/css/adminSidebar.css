@@ -23,6 +23,13 @@
     justify-content: center;
 }
 
+.sidebar-logo-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
 .sidebar-logo {
     width: auto;
     height: 82px;

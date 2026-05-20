@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {NavLink, useLocation, useNavigate} from "react-router-dom";
+import {Link, NavLink, useLocation, useNavigate} from "react-router-dom";
 import {adminMenu} from "../Global/AdminMenu";
 import {useAuth} from "../AuthContext";
 import "../assets/css/adminSidebar.css";
@@ -32,7 +32,9 @@ export default function AdminSidebar({userRole = "admin", isOpen = false, onClos
     return (
         <aside className={`admin-sidebar ${collapsed ? "collapsed" : ""} ${isOpen ? "admin-sidebar--open" : ""}`}>
             <div className="sidebar-header">
-                <img src={require("../assets/img/htbc-logo.png")} alt="Logo" className="sidebar-logo" />
+                <Link to="/" className="sidebar-logo-link" onClick={onClose} aria-label="Go to home page">
+                    <img src={require("../assets/img/htbc-logo.png")} alt="Logo" className="sidebar-logo" />
+                </Link>
             </div>
 
             <nav className="sidebar-nav">

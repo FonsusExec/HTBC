@@ -25,7 +25,7 @@ export default function LoginPage() {
 
     const handleGoogleLogin = async (credentialResponse) => {
         try {
-            const res = await fetch("http://localhost:5000/api/users/google-auth", {
+            const res = await fetch("/api/users/google-auth", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({credential: credentialResponse.credential}),
@@ -80,7 +80,7 @@ export default function LoginPage() {
                         </div>
                         <div>
                             <p>
-                                <a href="#">Forgot Password?</a>
+                                <Link to="/forgot-password">Forgot Password?</Link>
                             </p>
                         </div>
                     </div>

@@ -7,10 +7,57 @@ import axios from "axios";
 import Product from "../../components/Product";
 import Loading from "../../components/Loading";
 import {getProductId, getProductsFromResponse} from "../../utils/productHelpers";
+import {useCart} from "../../CartContext";
 
 const ResourcesSection = React.lazy(() => import("../../components/ResourceSection"));
 const fallbackBlogImage = require("../../assets/img/htbc-blog.jpg");
 const fallbackDonationImage = require("../../assets/img/htbc-donate1.png");
+const fallbackNewsImage = require("../../assets/img/htbc-new1.png");
+
+const decodeHtmlEntities = (value = "") => {
+    let text = String(value).replace(/&nbsp;|&#160;|\u00a0/gi, " ");
+
+    if (typeof document === "undefined") return text;
+
+    const textarea = document.createElement("textarea");
+    for (let i = 0; i < 2; i += 1) {
+        textarea.innerHTML = text;
+        text = textarea.value;
+    }
+
+    return text.replace(/&nbsp;|&#160;|\u00a0/gi, " ");
+};
+
+const stripHtml = (value = "") => {
+    const decodedValue = decodeHtmlEntities(value);
+
+    return decodeHtmlEntities(
+        decodedValue
+            .replace(/&nbsp;|&#160;|\u00a0/gi, " ")
+            .replace(/<[^>]*>/g, " "),
+    )
+        .replace(/\s+/g, " ")
+        .trim();
+};
+
+const getImageSrc = (imageUrl, fallbackImage) => {
+    if (!imageUrl) return fallbackImage;
+    if (imageUrl.startsWith("http") || imageUrl.startsWith("/")) return imageUrl;
+    return `/${imageUrl}`;
+};
+
+const truncateText = (value = "", maxLength = 135) => {
+    const text = stripHtml(value);
+    if (text.length <= maxLength) return text;
+
+    const trimmed = text.slice(0, maxLength).trimEnd();
+    const lastSpace = trimmed.lastIndexOf(" ");
+    const safeText = lastSpace > 80 ? trimmed.slice(0, lastSpace) : trimmed;
+
+    return `${safeText}...`;
+};
+
+const getNewsSummary = (article) => stripHtml(article.description || article.metaDescription || article.content || "") || "Read the latest update from How To Be Catholic.";
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -26,21 +73,26 @@ const reducer = (state, action) => {
 };
 
 export default function LandingPage() {
+    const newsTrackRef = React.useRef(null);
+    const {getCartCount} = useCart();
     const [{loading, products, error}, dispatch] = React.useReducer(reducer, {
         loading: true,
         products: [],
         error: "",
     });
     const [latestBlog, setLatestBlog] = React.useState(null);
+    const [latestNews, setLatestNews] = React.useState([]);
     const [resources, setResources] = React.useState([]);
     const [impactStories, setImpactStories] = React.useState([]);
     const [contentLoading, setContentLoading] = React.useState({
         blog: true,
+        news: true,
         resources: true,
         donations: true,
     });
     const [contentErrors, setContentErrors] = React.useState({
         blog: "",
+        news: "",
         resources: "",
         donations: "",
     });
@@ -63,18 +115,19 @@ export default function LandingPage() {
         let isMounted = true;
 
         const fetchLandingContent = async () => {
-            setContentLoading({blog: true, resources: true, donations: true});
-            setContentErrors({blog: "", resources: "", donations: ""});
+            setContentLoading({blog: true, news: true, resources: true, donations: true});
+            setContentErrors({blog: "", news: "", resources: "", donations: ""});
 
-            const [blogResult, resourcesResult, impactStoriesResult] = await Promise.allSettled([
+            const [blogResult, newsResult, resourcesResult, impactStoriesResult] = await Promise.allSettled([
                 axios.get("/api/blogs", {params: {page: 1, limit: 1, type: "blog"}}),
+                axios.get("/api/news", {params: {page: 1, limit: 8, sort: "newest"}}),
                 axios.get("/api/resources", {params: {page: 1, limit: 5}}),
                 axios.get("/api/impact-stories", {params: {page: 1, limit: 3}}),
             ]);
 
             if (!isMounted) return;
 
-            const nextErrors = {blog: "", resources: "", donations: ""};
+            const nextErrors = {blog: "", news: "", resources: "", donations: ""};
 
             if (blogResult.status === "fulfilled") {
                 const blogData = blogResult.value.data;
@@ -82,6 +135,13 @@ export default function LandingPage() {
                 setLatestBlog(blogPosts[0] || null);
             } else {
                 nextErrors.blog = blogResult.reason?.response?.data?.message || "Latest blog post is unavailable right now.";
+            }
+
+            if (newsResult.status === "fulfilled") {
+                const newsData = newsResult.value.data;
+                setLatestNews(Array.isArray(newsData) ? newsData.slice(0, 8) : (newsData?.articles || []).slice(0, 8));
+            } else {
+                nextErrors.news = newsResult.reason?.response?.data?.message || "Latest news is unavailable right now.";
             }
 
             if (resourcesResult.status === "fulfilled") {
@@ -99,7 +159,7 @@ export default function LandingPage() {
             }
 
             setContentErrors(nextErrors);
-            setContentLoading({blog: false, resources: false, donations: false});
+            setContentLoading({blog: false, news: false, resources: false, donations: false});
         };
 
         fetchLandingContent();
@@ -109,8 +169,17 @@ export default function LandingPage() {
         };
     }, []);
 
-    const latestBlogImage = latestBlog?.imageUrl || fallbackBlogImage;
-    const latestBlogExcerpt = latestBlog?.excerpt || latestBlog?.metaDescription || "Read the latest reflection from our parish community.";
+    const latestBlogImage = getImageSrc(latestBlog?.imageUrl, fallbackBlogImage);
+    const latestBlogExcerpt = stripHtml(latestBlog?.excerpt || latestBlog?.metaDescription || latestBlog?.content || "") || "Read the latest reflection from our parish community.";
+    const featuredProducts = products.slice(0, 4);
+    const cartCount = getCartCount();
+
+    const scrollLatestNews = (direction) => {
+        if (!newsTrackRef.current) return;
+        const card = newsTrackRef.current.querySelector(".landing-news-item");
+        const scrollAmount = card ? card.offsetWidth + 18 : 300;
+        newsTrackRef.current.scrollBy({left: direction * scrollAmount, behavior: "smooth"});
+    };
 
     return (
         <div>
@@ -155,7 +224,7 @@ export default function LandingPage() {
                             <>
                                 <h3>{latestBlog.title}</h3>
                                 <p>{latestBlogExcerpt}</p>
-                                <Link to="/blog">Read More</Link>
+                                <Link to={`/blog/${latestBlog._id}`}>Read More</Link>
                             </>
                         ) : (
                             <div className="landing-section-state landing-section-state--inline">No blog post has been published yet.</div>
@@ -168,52 +237,43 @@ export default function LandingPage() {
                         <div className="date">TODAY</div>
                         <h2>News</h2>
                         <p>Stay informed with the latest from our parish community.</p>
-                        <FontAwesomeIcon icon={faAngleLeft} className="news-arrow" />
-                        <FontAwesomeIcon icon={faAngleRight} className="news-arrow" />
-                    </div>
-                    <div className="news-grid">
-                        <div className="news-item">
-                            <img src={require("../../assets/img/htbc-new1.png")} alt="Church in the World" />
-                            <h3>Church in the World</h3>
-                            <p>
-                                Pope Francis calls for "Global Day of Prayer for Peace" in response to ongoing conflicts around the world. Pope Francis has declared July 7th a day of fasting and
-                                prayer for global peace and reconciliation.
-                            </p>
-                            <a href="#" className="read-more">
-                                Read More
-                            </a>
-                        </div>
-                        <div className="news-item">
-                            <img src={require("../../assets/img/htbc-news2.png")} alt="Parish Announcements" />
-                            <h3>Parish Announcements</h3>
-                            <p>
-                                New Mass Schedule Begins July 1st. Starting July 1st, weekday Mass will now begin at 6:30 AM instead of 7:00 AM to accommodate early workers. Sunday Mass times remain
-                                unchanged.
-                            </p>
-                            <a href="#" className="read-more">
-                                Read More
-                            </a>
-                        </div>
-                        <div className="news-item">
-                            <img src={require("../../assets/img/htbc-news3.png")} alt="Faith in Action" />
-                            <h3>Faith in Action</h3>
-                            <p>Parish Feeds 300 Families in Outreach Drive. Thanks to your generosity, our Corpus Christi Food Drive provided meals for over 300 families in need last week.</p>
-                            <a href="#" className="read-more">
-                                Read More
-                            </a>
-                        </div>
-                        <div className="news-item">
-                            <img src={require("../../assets/img/htbc-news4.png")} alt="From the Parish Priest's Desk" />
-                            <h3>From the Parish Priest's Desk</h3>
-                            <p>
-                                Walking in Faith, Even When It's Hard. In this week's reflection, Fr. Michael discusses how doubt and faith often walk hand and how God's grace meets us right where we
-                                are.
-                            </p>
-                            <a href="#" className="read-more">
-                                Read More
-                            </a>
+                        <div className="landing-news-controls" aria-label="Latest news carousel controls">
+                            <button type="button" className="landing-news-arrow" onClick={() => scrollLatestNews(-1)} aria-label="Scroll latest news left">
+                                <FontAwesomeIcon icon={faAngleLeft} />
+                            </button>
+                            <button type="button" className="landing-news-arrow" onClick={() => scrollLatestNews(1)} aria-label="Scroll latest news right">
+                                <FontAwesomeIcon icon={faAngleRight} />
+                            </button>
                         </div>
                     </div>
+                    {contentLoading.news ? (
+                        <div className="landing-section-state">
+                            <Loading message="Loading latest news..." />
+                        </div>
+                    ) : contentErrors.news ? (
+                        <div className="landing-section-state landing-section-state--error">{contentErrors.news}</div>
+                    ) : latestNews.length === 0 ? (
+                        <div className="landing-section-state">No news has been published yet.</div>
+                    ) : (
+                        <div className="landing-news-track" ref={newsTrackRef}>
+                            {latestNews.map((article) => {
+                                const title = stripHtml(article.title || "News update");
+
+                                return (
+                                    <article className="landing-news-item" key={article._id}>
+                                        <img src={getImageSrc(article.imageUrl, fallbackNewsImage)} alt={title} />
+                                        <div className="landing-news-copy">
+                                            <h3>{title}</h3>
+                                            <p>{getNewsSummary(article)}</p>
+                                        </div>
+                                        <Link to={`/news/${article._id}`} className="read-more">
+                                            Read More
+                                        </Link>
+                                    </article>
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
 
                 <div className="shop-section">
@@ -222,14 +282,14 @@ export default function LandingPage() {
                         <div className="header-content">
                             <h2>Discover Our Featured Products</h2>
 
-                            <div className="cart-badge">
-                                <p>0</p>
+                            <Link to="/cart" className="cart-badge" aria-label={`View cart with ${cartCount} items`}>
+                                <p>{cartCount}</p>
                                 <img src={require("../../assets/img/htbc-cart.png")} alt="Cart" />
-                            </div>
+                            </Link>
 
-                            <a href="#" className="view-all">
+                            <Link to="/all-products" className="view-all" aria-label="View all products">
                                 <FontAwesomeIcon icon={faAngleRight} className="news-arrow" />
-                            </a>
+                            </Link>
                         </div>
                     </div>
                     <div className="shop-grid">
@@ -240,7 +300,7 @@ export default function LandingPage() {
                         ) : error ? (
                             <div className="shop-error">{error}</div>
                         ) : (
-                            products.map((product) => <Product key={getProductId(product)} product={product} />)
+                            featuredProducts.map((product) => <Product key={getProductId(product)} product={product} />)
                         )}
                     </div>
                 </div>
@@ -292,7 +352,7 @@ export default function LandingPage() {
                                         </Link>
                                     </div>
                                     <p>{story.title}</p>
-                                    <p className="description">{story.description}</p>
+                                    <p className="description">{truncateText(story.description)}</p>
                                 </div>
                             ))}
                         </div>

@@ -5,6 +5,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import slugify from "slugify";
+import auth, {requireSuperAdmin} from "../middleware/auth.js";
 
 import {fileURLToPath} from "url";
 import {dirname} from "path";
@@ -44,6 +45,8 @@ router.get(
 // POST /api/resources - Create new resource
 router.post(
     "/",
+    auth,
+    requireSuperAdmin,
     upload.single("pdf"),
     expressAsyncHandler(async (req, res) => {
         const {title, link, body, seoTitle, metaDescription, keywords, slug} = req.body;
@@ -70,6 +73,8 @@ router.post(
 // PUT /api/resources/:id - Update
 router.put(
     "/:id",
+    auth,
+    requireSuperAdmin,
     upload.single("pdf"),
     expressAsyncHandler(async (req, res) => {
         const {title, link, body, seoTitle, metaDescription, keywords, slug} = req.body;
@@ -89,6 +94,8 @@ router.put(
 // DELETE /api/resources/:id
 router.delete(
     "/:id",
+    auth,
+    requireSuperAdmin,
     expressAsyncHandler(async (req, res) => {
         const deleted = await Resource.findByIdAndDelete(req.params.id);
         if (!deleted) return res.status(404).json({message: "Resource not found"});

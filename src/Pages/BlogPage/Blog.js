@@ -1,7 +1,17 @@
 import React, {useState, useEffect} from "react";
 import axios from "axios";
+import {Link} from "react-router-dom";
 import "./blog.css";
 import Loading from "../../components/Loading";
+
+const fallbackBlogImage = require("../../assets/img/htbc-blog.jpg");
+
+const getImageSrc = (imageUrl) => {
+    if (!imageUrl) return fallbackBlogImage;
+    if (typeof imageUrl !== "string") return imageUrl;
+    if (imageUrl.startsWith("http") || imageUrl.startsWith("/")) return imageUrl;
+    return `/${imageUrl}`;
+};
 
 export default function Blog() {
     const [posts, setPosts] = useState([]); // Current page's posts
@@ -16,7 +26,7 @@ export default function Blog() {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const params = {page: currentPage, limit};
+                const params = {page: currentPage, limit, type: "blog"};
                 if (searchTerm) params.search = searchTerm; // Pass search to backend for server-side filtering
 
                 const {data} = await axios.get("/api/blogs", {params});
@@ -24,7 +34,7 @@ export default function Blog() {
                 setTotalPosts(data.total || 0); // Total for pagination
 
                 // Extract unique categories (from current page or refetch all if needed)
-                const uniqueCategories = [...new Set(data.posts.map((post) => post.category))];
+                const uniqueCategories = [...new Set((data.posts || []).map((post) => post.category).filter(Boolean))];
                 setCategories(uniqueCategories);
             } catch (error) {
                 console.error("Error fetching posts:", error);
@@ -116,14 +126,14 @@ export default function Blog() {
                     <h2 className="featured-blog-title">Featured Posts</h2>
                     <div className="blog-grid">
                         {posts.map((post) => (
-                            <div key={post._id} className="blog-card">
+                            <Link key={post._id} to={`/blog/${post._id}`} className="blog-card">
                                 <div className="blog-card-content">
-                                    <img src={post.imageUrl} alt={post.title} />
+                                    <img src={getImageSrc(post.imageUrl)} alt={post.title} />
                                     <h4>{post.title}</h4>
                                     <p>{post.excerpt}</p>
                                     <span className="category-tag">{post.category}</span>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                         {posts.length === 0 && <p>No posts found. Try a different search or page.</p>}
                     </div>

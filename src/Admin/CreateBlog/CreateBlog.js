@@ -5,6 +5,7 @@ import "react-quill-new/dist/quill.snow.css";
 import slugify from "slugify";
 import {useNavigate} from "react-router-dom";
 import "./createBlog.css";
+import {getAuthHeaders} from "../../utils/authHeaders";
 
 export default function CreateBlog() {
     const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function CreateBlog() {
     const [metaDescription, setMetaDescription] = useState("");
     const [keywords, setKeywords] = useState("");
     const [slug, setSlug] = useState("");
+    const [status, setStatus] = useState("active");
     const [loading, setLoading] = useState(false);
 
     const categories = ["Faith Formation", "Apologetics", "Spirituality"];
@@ -60,6 +62,8 @@ export default function CreateBlog() {
         formData.append("title", title);
         formData.append("body", body);
         formData.append("category", category);
+        formData.append("type", "blog");
+        formData.append("status", status);
         formData.append("seoTitle", seoTitle || title);
         formData.append("metaDescription", metaDescription);
         formData.append("keywords", keywords);
@@ -72,6 +76,7 @@ export default function CreateBlog() {
         try {
             const res = await fetch("/api/blogs", {
                 method: "POST",
+                headers: getAuthHeaders(),
                 body: formData,
             });
 
@@ -93,6 +98,7 @@ export default function CreateBlog() {
             setMetaDescription("");
             setKeywords("");
             setSlug("");
+            setStatus("active");
         } catch (err) {
             console.error(err);
             toast.error(err.message || "Something went wrong");
@@ -143,6 +149,15 @@ export default function CreateBlog() {
                                         {cat}
                                     </option>
                                 ))}
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Status</label>
+                            <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                                <option value="active">Active - visible on site</option>
+                                <option value="draft">Draft - admin only</option>
+                                <option value="archived">Archived - hidden</option>
                             </select>
                         </div>
 

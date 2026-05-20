@@ -17,15 +17,20 @@ const orderSchema = new mongoose.Schema(
         items: [
             {
                 // Flexible array items
+                product: {type: mongoose.Schema.Types.ObjectId, ref: "Product"},
+                productId: {type: String, default: ""},
                 name: {type: String, default: ""},
                 qty: {type: Number, default: 0},
+                quantity: {type: Number, default: 0},
                 price: {type: Number, default: 0},
+                image: {type: String, default: ""},
                 // Allow extras (e.g., image, _id) without failing
             },
         ],
         subtotal: {type: Number, default: 0},
         total: {type: Number, required: true},
         paymentId: {type: String, default: ""},
+        reservationId: {type: String, default: ""},
         status: {type: String, default: "confirmed"},
         createdAt: {type: Date, default: Date.now},
     },

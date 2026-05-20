@@ -35,17 +35,20 @@ export const AuthProvider = ({children}) => {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        if (token) {
-            setAuthHeader(token);
-            axios
-                .get("/api/users/me")
-                .then(({data}) => setUser(data))
-                .catch(() => {
-                    localStorage.removeItem("token");
-                    setAuthHeader(null);
-                });
+        if (!token) {
+            setLoading(false);
+            return;
         }
-        setLoading(false);
+
+        setAuthHeader(token);
+        axios
+            .get("/api/users/me")
+            .then(({data}) => setUser(data))
+            .catch(() => {
+                localStorage.removeItem("token");
+                setAuthHeader(null);
+            })
+            .finally(() => setLoading(false));
     }, []);
 
     // NORMAL EMAIL/PASSWORD LOGIN

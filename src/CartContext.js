@@ -15,16 +15,19 @@ const cartReducer = (state, action) => {
     switch (action.type) {
         case "ADD_ITEM":
             const parsedPayload = {...action.payload, price: parsePrice(action.payload.price)};
+            const stockLimit = Number(parsedPayload.stock);
+            const hasStockLimit = Number.isFinite(stockLimit) && stockLimit >= 0;
+            if (hasStockLimit && stockLimit < 1) return state;
             const existItem = state.cart.find((x) => x._id === parsedPayload._id);
             if (existItem) {
                 return {
                     ...state,
-                    cart: state.cart.map((x) => (x._id === parsedPayload._id ? {...x, qty: x.qty + parsedPayload.qty} : x)),
+                    cart: state.cart.map((x) => (x._id === parsedPayload._id ? {...x, qty: hasStockLimit ? Math.min(stockLimit, x.qty + parsedPayload.qty) : x.qty + parsedPayload.qty} : x)),
                 };
             } else {
                 return {
                     ...state,
-                    cart: [...state.cart, parsedPayload],
+                    cart: [...state.cart, {...parsedPayload, qty: hasStockLimit ? Math.min(stockLimit, parsedPayload.qty) : parsedPayload.qty}],
                 };
             }
         case "UPDATE_QTY":

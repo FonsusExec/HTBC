@@ -8,7 +8,8 @@ import Loading from "../../components/Loading";
 import "./donationForm.css";
 import {findDonationItemById, getDonationItemById} from "./donationItems";
 
-const stripePromise = loadStripe("pk_test_51SUrTpIFfcTcOPno0d9Cc86ZlM55AROCNRZS2dFCrPLdjVplYCNLw3GUmwufxG6ocTdMNtd4LI7qhaOh8NPjl27E00LQQs8RLF");
+const stripePublishableKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : Promise.resolve(null);
 const AMOUNT_OPTIONS = [25, 50, 100, 250];
 
 function DonationPaymentForm({amount, donation, form, onValidate, onSuccess}) {

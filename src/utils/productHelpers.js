@@ -19,5 +19,6 @@ export const toCartItem = (product, qty = 1) => ({
     name: getProductName(product),
     image: getProductImage(product),
     price: getProductPrice(product),
+    stock: product?.stock ?? product?.countInStock ?? null,
     qty,
 });

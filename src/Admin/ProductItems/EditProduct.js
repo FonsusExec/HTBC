@@ -3,6 +3,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {toast} from "react-toastify";
 import "./addProduct.css";
 import Loading from "../../components/Loading";
+import {getAuthHeaders} from "../../utils/authHeaders";
 
 export default function EditProduct() {
     const navigate = useNavigate();
@@ -207,6 +208,7 @@ export default function EditProduct() {
 
             const res = await fetch(`/api/products/${id}`, {
                 method: "PUT",
+                headers: getAuthHeaders(),
                 body: data,
             });
 

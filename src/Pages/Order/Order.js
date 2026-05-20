@@ -21,8 +21,6 @@ export default function Orders() {
         }
 
         const fetchOrders = async () => {
-            console.log("Token in localStorage:", localStorage.getItem("token")); // Debug
-            console.log("Current Axios header:", axios.defaults.headers.common.Authorization); // Should be "Bearer eyJ..."
             try {
                 const {data} = await axios.get("/api/orders"); // Protected endpoint
                 setOrders(data); // Expects array of { orderId, total, status, createdAt, items: [...] }

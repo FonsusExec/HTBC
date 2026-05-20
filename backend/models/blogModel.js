@@ -12,6 +12,11 @@ const blogSchema = new mongoose.Schema({
     metaDescription: {type: String},
     keywords: [{type: String}],
     slug: {type: String, unique: true},
+    status: {
+        type: String,
+        enum: ["active", "draft", "archived"],
+        default: "active",
+    },
 
     type: {
         type: String,

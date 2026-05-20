@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import "./category.css";
+import {getAuthHeaders} from "../../utils/authHeaders";
 
 const CategoryForm = () => {
     const navigate = useNavigate();
@@ -29,7 +30,7 @@ const CategoryForm = () => {
         try {
             const res = await fetch("/api/categories", {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
+                headers: getAuthHeaders({"Content-Type": "application/json"}),
                 body: JSON.stringify({name: name.trim()}),
             });
 

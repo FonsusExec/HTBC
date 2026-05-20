@@ -1,8 +1,13 @@
 import User from "../models/userModel.js";
-import jwt from "jsonwebtoken";
 import {OAuth2Client} from "google-auth-library";
 
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const getGoogleClient = () => {
+    if (!process.env.GOOGLE_CLIENT_ID) {
+        throw new Error("GOOGLE_CLIENT_ID is missing from backend/.env");
+    }
+
+    return new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+};
 
 export const googleAuth = async (req, res) => {
     try {
@@ -13,7 +18,7 @@ export const googleAuth = async (req, res) => {
         }
 
         // 1️⃣ Verify token from Google
-        const ticket = await client.verifyIdToken({
+        const ticket = await getGoogleClient().verifyIdToken({
             idToken: credential,
             audience: process.env.GOOGLE_CLIENT_ID,
         });

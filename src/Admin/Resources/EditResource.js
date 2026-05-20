@@ -7,6 +7,7 @@ import slugify from "slugify";
 import axios from "axios";
 import "./createResources.css"; // Reuse the same styles
 import Loading from "../../components/Loading";
+import {getAuthHeaders} from "../../utils/authHeaders";
 
 export default function EditResources() {
     const {id} = useParams(); // Get resource ID from URL
@@ -100,6 +101,7 @@ export default function EditResources() {
         try {
             const res = await fetch(`/api/resources/${id}`, {
                 method: "PUT",
+                headers: getAuthHeaders(),
                 body: formData,
             });
 

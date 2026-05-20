@@ -9,8 +9,11 @@ function Product({product}) {
     const image = getProductImage(product);
     const price = getProductPrice(product);
     const routeId = getProductRouteId(product);
+    const stock = Number(product?.stock ?? product?.countInStock);
+    const isOutOfStock = Number.isFinite(stock) && stock <= 0;
 
     const addToCartHandler = () => {
+        if (isOutOfStock) return;
         addToCart(toCartItem(product));
     };
 
@@ -24,8 +27,8 @@ function Product({product}) {
 
             <div className="price-and-cart">
                 <div className="price">${price}</div>
-                <button className="add-to-cart" onClick={addToCartHandler}>
-                    Add to Cart
+                <button className="add-to-cart" onClick={addToCartHandler} disabled={isOutOfStock}>
+                    {isOutOfStock ? "Out of Stock" : "Add to Cart"}
                 </button>
             </div>
         </div>

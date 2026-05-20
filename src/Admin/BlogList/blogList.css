@@ -90,6 +90,32 @@
     border-bottom: 1px solid #eee;
 }
 
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.status-badge--active {
+    background: #e8f7ee;
+    color: #18733c;
+}
+
+.status-badge--draft {
+    background: #fff5d6;
+    color: #8a6400;
+}
+
+.status-badge--archived {
+    background: #eceff3;
+    color: #56616f;
+}
+
 /* Actions */
 .action-buttons {
     display: flex;

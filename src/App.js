@@ -1,21 +1,24 @@
-import React from "react";
+import React, {useEffect} from "react";
 import "./App.css";
-import {HashRouter, Route, Routes} from "react-router-dom";
+import {HashRouter, Navigate, Route, Routes, useLocation} from "react-router-dom";
 import {HelmetProvider} from "react-helmet-async";
 import {Layout} from "./Global/Layout";
 import LandingPage from "./Pages/Home/LandingPage";
 import LoginPage from "./Pages/LoginPage/LoginPage";
 import CreateAccount from "./Pages/CreateAccount/CreateAccount";
+import ForgotPassword from "./Pages/ForgotPassword/ForgotPassword";
+import ResetPassword from "./Pages/ForgotPassword/ResetPassword";
 import ProductScreen from "./Pages/ProductPage/ProductScreen";
 import CartScreen from "./Pages/CartScreen/CartScreen";
 import CheckoutScreen from "./Pages/CheckOutPage/CheckOut";
 import {CartProvider} from "./CartContext";
 import OrderConfirmation from "./Pages/OrderConfirm/OrderConfirmation";
-import {AuthProvider} from "./AuthContext";
+import {AuthProvider, useAuth} from "./AuthContext";
 import Orders from "./Pages/Order/Order";
 import {GoogleOAuthProvider} from "@react-oauth/google";
 import AllProductPage from "./Pages/AllProductPage/AllProductPage";
 import Blog from "./Pages/BlogPage/Blog";
+import PublicBlogDetail from "./Pages/BlogPage/BlogDetail";
 import CreateBlog from "./Admin/CreateBlog/CreateBlog";
 import BlogList from "./Admin/BlogList/BlogList ";
 import AdminLayout from "./components/AdminLayout";
@@ -24,6 +27,7 @@ import "react-toastify/dist/ReactToastify.css";
 import EditBlog from "./Admin/CreateBlog/EditBlog";
 import BlogDetail from "./Admin/BlogDetail/BlogDetail";
 import NewsArticle from "./Pages/News/NewsArticle";
+import NewsDetail from "./Pages/News/NewsDetail";
 import CreateNews from "./Admin/CreateNews/CreateNews";
 import EditNews from "./Admin/CreateNews/EditNews";
 import CreateResources from "./Admin/Resources/CreateResources";
@@ -53,7 +57,35 @@ import Dashboard from "./Admin/Dashboard/Dashboard";
 import CommunityManagement from "./Admin/Community/CommunityManagement";
 import "./assets/css/responsive.css";
 
-const GOOGLE_CLIENT_ID = "53484533068-h210045g5v4616crba7g8183nicq9rq7.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || "";
+
+function ScrollToTop() {
+    const {pathname, search} = useLocation();
+
+    useEffect(() => {
+        window.scrollTo({top: 0, left: 0, behavior: "auto"});
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+    }, [pathname, search]);
+
+    return null;
+}
+
+const normalizeRole = (role) => {
+    if (!role) return "";
+    const roleValue = typeof role === "string" ? role : role.name || role.slug || "";
+    return roleValue.toLowerCase().replace(/[-_]+/g, " ").trim();
+};
+
+function RequireSuperAdmin({children}) {
+    const {user, loading, isLoggedIn} = useAuth();
+
+    if (loading) return null;
+    if (!isLoggedIn) return <Navigate to="/login" replace />;
+    if (normalizeRole(user?.role) !== "super admin") return <Navigate to="/" replace />;
+
+    return children;
+}
 
 function App() {
     return (
@@ -63,19 +95,25 @@ function App() {
                     <AuthProvider>
                         <CartProvider>
                             <HashRouter>
+                                <ScrollToTop />
                                 <Routes>
                                     <Route path="/" element={<Layout />}>
                                         <Route index element={<LandingPage />} />
                                         <Route path="login" element={<LoginPage />} />
                                         <Route path="create-account" element={<CreateAccount />} />
+                                        <Route path="forgot-password" element={<ForgotPassword />} />
+                                        <Route path="reset-password/:token" element={<ResetPassword />} />
                                         <Route path="product/:htbc" element={<ProductScreen />} />
                                         <Route path="cart" element={<CartScreen />} />
                                         <Route path="checkout" element={<CheckoutScreen />} />
                                         <Route path="order-confirmation" element={<OrderConfirmation />} />
                                         <Route path="all-products" element={<AllProductPage />} />
                                         <Route path="blog" element={<Blog />} />
+                                        <Route path="blog/:id" element={<PublicBlogDetail />} />
                                         <Route path="orders" element={<Orders />} />
                                         <Route path="news" element={<NewsArticle />} />
+                                        <Route path="news/:id" element={<NewsDetail />} />
+                                        <Route path="about-us" element={<AboutUs />} />
                                         <Route path="contact-us" element={<AboutUs />} />
                                         <Route path="donate" element={<Donate />} />
                                         <Route path="donationform" element={<DonationForm />} />
@@ -84,7 +122,14 @@ function App() {
                                     </Route>
 
                                     {/* Admin Routes */}
-                                    <Route path="admin" element={<AdminLayout />}>
+                                    <Route
+                                        path="admin"
+                                        element={
+                                            <RequireSuperAdmin>
+                                                <AdminLayout />
+                                            </RequireSuperAdmin>
+                                        }
+                                    >
                                         <Route index element={<Dashboard />} />
                                         <Route path="dashboard" element={<Dashboard />} />
                                         {/* <Route path="bloglist" element={<BlogList />} /> */}

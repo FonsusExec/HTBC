@@ -74,7 +74,11 @@ export const adminMenu = [
     {
         label: "Community Management",
         icon: <FaComments />,
-        roles: ["admin", "moderator"],
-        children: [{type: "link", label: "Community", path: "/admin/community"}],
+        roles: ["admin"],
+        children: [
+            {type: "link", label: "Community", path: "/admin/community"},
+            {type: "link", label: "About Us", path: "/admin/about-us"},
+            {type: "link", label: "Testimonials", path: "/admin/testimonials"},
+        ],
     },
 ];

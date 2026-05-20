@@ -105,8 +105,8 @@ export default function Dashboard() {
 
         const results = await Promise.allSettled([
             axios.get("/api/admin/orders", authConfig),
-            axios.get("/api/blogs", {params: {page: 1, limit: 5, type: "blog"}}),
-            axios.get("/api/blogs", {params: {page: 1, limit: 5, type: "news"}}),
+            axios.get("/api/blogs", {params: {page: 1, limit: 5, type: "blog", status: "all"}}),
+            axios.get("/api/news", {params: {page: 1, limit: 5, status: "all"}}),
             axios.get("/api/products", {params: {page: 1, limit: 100}}),
             axios.get("/api/admin/users"),
             axios.get("/api/admin/donations", {...authConfig, params: {page: 1, limit: 100}}),
@@ -116,7 +116,7 @@ export default function Dashboard() {
         const [ordersResult, blogsResult, newsResult, productsResult, usersResult, donationsResult, storiesResult] = results;
         const orders = getList(ordersResult, "orders");
         const blogs = getList(blogsResult, "posts");
-        const news = getList(newsResult, "posts");
+        const news = getList(newsResult, "articles");
         const products = getList(productsResult, "products");
         const users = getList(usersResult, "users");
         const donations = getList(donationsResult, "donations");

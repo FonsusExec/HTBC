@@ -2,6 +2,7 @@ import React, {useState, useRef, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import "./addProduct.css";
+import {getAuthHeaders} from "../../utils/authHeaders";
 
 export default function AddProduct() {
     const navigate = useNavigate();
@@ -125,8 +126,11 @@ export default function AddProduct() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!formData.title) return toast.error("Title required");
+        if (!formData.title.trim()) return toast.error("Title required");
         if (!formData.category) return toast.error("Category required");
+        if (!formData.price) return toast.error("Price required");
+        if (!formData.stock) return toast.error("Stock required");
+        if (!formData.description.trim()) return toast.error("Description required");
         if (!images.length) return toast.error("Upload at least one image");
 
         setLoading(true);
@@ -145,11 +149,18 @@ export default function AddProduct() {
 
             const res = await fetch("/api/products", {
                 method: "POST",
+                headers: getAuthHeaders(),
                 body: data,
             });
 
-            const result = await res.json();
-            if (!res.ok) throw new Error(result.message);
+            const responseText = await res.text();
+            let result = {};
+            try {
+                result = responseText ? JSON.parse(responseText) : {};
+            } catch {
+                result = {message: responseText || "Failed to add product"};
+            }
+            if (!res.ok) throw new Error(result.message || "Failed to add product");
 
             toast.success("Product added!");
             navigate("/admin/productlist");
@@ -170,7 +181,7 @@ export default function AddProduct() {
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-grid">
-                        <input name="title" placeholder="Title" onChange={handleChange} />
+                        <input name="title" placeholder="Title" value={formData.title} onChange={handleChange} required />
 
                         <div className="form-group">
                             <div className="price-input-wrapper">
@@ -186,7 +197,7 @@ export default function AddProduct() {
                                 />
                             </div>
                         </div>
-                        <input name="stock" type="number" placeholder="Stock" onChange={handleChange} />
+                        <input name="stock" type="number" placeholder="Stock" value={formData.stock} onChange={handleChange} required />
 
                         <select name="category" value={formData.category} onChange={handleCategoryChange} required>
                             <option value="">Select Main Category</option>
@@ -209,7 +220,7 @@ export default function AddProduct() {
                         {/* UPLOADER */}
                         <div className="upload-area full" onClick={() => fileRef.current.click()} onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
                             <p>Drag & Drop or Click to Upload</p>
-                            <input type="file" multiple hidden ref={fileRef} onChange={(e) => handleFiles(e.target.files)} />
+                            <input type="file" multiple hidden ref={fileRef} accept="image/*" onChange={(e) => handleFiles(e.target.files)} />
                         </div>
 
                         {/* PREVIEW GRID */}
@@ -238,7 +249,7 @@ export default function AddProduct() {
                             ))}
                         </div>
 
-                        <textarea className="full" name="description" placeholder="Description" onChange={handleChange} />
+                        <textarea className="full" name="description" placeholder="Description" value={formData.description} onChange={handleChange} required />
                     </div>
 
                     <div className="form-actions">
