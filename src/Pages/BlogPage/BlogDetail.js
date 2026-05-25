@@ -4,6 +4,7 @@ import {Helmet} from "react-helmet-async";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import {FaArrowLeft} from "react-icons/fa";
 import Loading from "../../components/Loading";
+import CommunityComments from "../../components/CommunityComments";
 import "./blogDetailPage.css";
 
 const fallbackBlogImage = require("../../assets/img/htbc-blog.jpg");
@@ -61,6 +62,7 @@ export default function BlogDetail() {
     const {id} = useParams();
     const navigate = useNavigate();
     const [post, setPost] = useState(null);
+    const [commentCount, setCommentCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -154,6 +156,9 @@ export default function BlogDetail() {
                     <div className="public-blog-meta">
                         {post.category && <span>{post.category}</span>}
                         <time>{formatDate(post.createdAt)}</time>
+                        <span>
+                            {commentCount} {commentCount === 1 ? "comment" : "comments"}
+                        </span>
                     </div>
 
                     {articleHtml ? (
@@ -162,6 +167,10 @@ export default function BlogDetail() {
                         <p className="public-blog-empty">No blog content is available yet.</p>
                     )}
                 </article>
+
+                <section className="public-blog-comments">
+                    <CommunityComments contentType="blog" contentId={id} title="Discussion" onCountChange={setCommentCount} />
+                </section>
             </main>
         </>
     );

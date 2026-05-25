@@ -1,21 +1,17 @@
 import express from "express";
 import NewsArticle from "../models/NewsArticle.js";
 import NewsComment from "../models/newsCommentModel.js";
+import CommunityComment from "../models/communityCommentModel.js";
 import expressAsyncHandler from "express-async-handler";
 import slugify from "slugify";
 import Parser from "rss-parser";
 import {parse} from "node-html-parser";
 import axios from "axios";
-import multer from "multer";
 import striptags from "striptags";
 import he from "he";
 import auth, {isSuperAdminUser, optionalAuth, requireSuperAdmin} from "../middleware/auth.js";
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, "uploads/"),
-    filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
-});
-const upload = multer({storage});
+import imageUpload from "../middleware/imageUpload.js";
+import {uploadImageToCloudinary} from "../utils/cloudinary.js";
 
 const parser = new Parser();
 const router = express.Router();
@@ -175,7 +171,7 @@ router.post(
     "/",
     auth,
     requireSuperAdmin,
-    upload.single("media"),
+    imageUpload.single("media"),
     expressAsyncHandler(async (req, res) => {
         const {title, body, source, url, imageUrl, seoTitle, metaDescription, keywords, slug, status} = req.body;
 
@@ -185,12 +181,13 @@ router.post(
 
         const plainBody = getPlainText(body);
         const description = plainBody.length > 180 ? plainBody.substring(0, 180) + "..." : plainBody;
+        const uploadedImage = req.file ? await uploadImageToCloudinary(req.file, "news") : null;
 
         const article = await NewsArticle.create({
             title,
             description,
             content: body,
-            imageUrl: req.file ? `/uploads/${req.file.filename}` : imageUrl || null,
+            imageUrl: uploadedImage?.url || imageUrl || null,
             pubDate: new Date(),
             source: source || "Admin Curated",
             seoTitle: seoTitle || title,
@@ -211,7 +208,7 @@ router.get(
         const article = await NewsArticle.findById(req.params.id).select("_id");
         if (!article) return res.status(404).json({message: "Article not found"});
 
-        const comments = await NewsComment.find({article: req.params.id}).sort({createdAt: -1});
+        const comments = await CommunityComment.find({contentType: "news", contentId: req.params.id, status: "approved"}).sort({createdAt: -1});
         res.json({comments});
     }),
 );
@@ -231,14 +228,16 @@ router.post(
         const article = await NewsArticle.findById(req.params.id).select("_id");
         if (!article) return res.status(404).json({message: "Article not found"});
 
-        const createdComment = await NewsComment.create({
-            article: req.params.id,
+        const createdComment = await CommunityComment.create({
+            contentType: "news",
+            contentId: req.params.id,
             name: commenterName,
             email: commenterEmail,
             body: commentBody,
+            status: "pending",
         });
 
-        res.status(201).json({message: "Comment posted", comment: createdComment});
+        res.status(201).json({message: "Comment submitted for moderation", comment: createdComment});
     }),
 );
 
@@ -252,10 +251,12 @@ router.patch(
         }
 
         const field = reaction === "like" ? "likes" : "dislikes";
-        const comment = await NewsComment.findOneAndUpdate(
+        const comment = await CommunityComment.findOneAndUpdate(
             {
                 _id: req.params.commentId,
-                article: req.params.id,
+                contentType: "news",
+                contentId: req.params.id,
+                status: "approved",
             },
             {$inc: {[field]: 1}},
             {new: true},
@@ -279,7 +280,7 @@ router.put(
     "/:id",
     auth,
     requireSuperAdmin,
-    upload.single("media"),
+    imageUpload.single("media"),
     expressAsyncHandler(async (req, res) => {
         const {title, body, source, url, imageUrl, seoTitle, metaDescription, keywords, slug, status} = req.body;
 
@@ -306,7 +307,8 @@ router.put(
         article.updatedAt = new Date();
 
         if (req.file) {
-            article.imageUrl = `/uploads/${req.file.filename}`;
+            const uploadedImage = await uploadImageToCloudinary(req.file, "news");
+            article.imageUrl = uploadedImage.url;
         } else if (imageUrl) {
             article.imageUrl = imageUrl;
         }
@@ -336,6 +338,7 @@ router.delete(
         const article = await NewsArticle.findByIdAndDelete(req.params.id);
         if (!article) return res.status(404).json({message: "Article not found"});
         await NewsComment.deleteMany({article: req.params.id});
+        await CommunityComment.deleteMany({contentType: "news", contentId: req.params.id});
         res.json({message: "News deleted successfully"});
     }),
 );

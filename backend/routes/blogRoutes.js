@@ -1,34 +1,15 @@
 import express from "express";
-import BlogPost from "../models/blogModel.js"; // Adjust path if needed
-import multer from "multer";
-import path from "path";
-import fs from "fs";
+import BlogPost from "../models/blogModel.js";
 import expressAsyncHandler from "express-async-handler";
-import striptags from "striptags"; // For HTML stripping
+import striptags from "striptags";
 import he from "he";
 import slugify from "slugify";
 import auth, {isSuperAdminUser, optionalAuth, requireSuperAdmin} from "../middleware/auth.js";
-
-// ← ADD THIS POLYFILL: For ES modules (fixes __dirname error)
-import {fileURLToPath} from "url";
-import {dirname} from "path";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import CommunityComment from "../models/communityCommentModel.js";
+import imageUpload from "../middleware/imageUpload.js";
+import {uploadImageToCloudinary} from "../utils/cloudinary.js";
 
 const router = express.Router();
-
-// Multer setup (self-contained here)
-const uploadDir = path.join(__dirname, "../uploads");
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, {recursive: true});
-    console.log("📁 Created uploads directory");
-}
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, "uploads/"),
-    filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)),
-});
-const upload = multer({storage});
 
 const getBlogTypeQuery = (type) => {
     if (type === "all") return {};
@@ -52,7 +33,6 @@ const getStatusQuery = (status = "") => {
 
 const getValidStatus = (status, fallback = "active") => (["active", "draft", "archived"].includes(status) ? status : fallback);
 
-// GET /api/blogs: List with pagination/search/status/type filter
 router.get(
     "/",
     optionalAuth,
@@ -67,20 +47,14 @@ router.get(
 
             const filters = [getBlogTypeQuery(type), getStatusQuery(status)];
 
-            // Search filter
             if (search) {
                 filters.push({$or: [{title: {$regex: search, $options: "i"}}, {excerpt: {$regex: search, $options: "i"}}]});
             }
 
             const query = filters.filter((filter) => Object.keys(filter).length > 0);
             const mongoQuery = query.length ? {$and: query} : {};
-
-            console.log("GET /api/blogs called with:", {page, limit, type, status, search});
-
             const skip = (page - 1) * limit;
-
             const posts = await BlogPost.find(mongoQuery).sort({createdAt: -1}).skip(skip).limit(limit).select("-content");
-
             const total = await BlogPost.countDocuments(mongoQuery);
 
             res.json({posts, total, page, limit});
@@ -91,12 +65,11 @@ router.get(
     }),
 );
 
-// POST /api/blogs: Create blog posts only
 router.post(
     "/",
     auth,
     requireSuperAdmin,
-    upload.single("media"),
+    imageUpload.single("media"),
     expressAsyncHandler(async (req, res) => {
         const {title, body, category, seoTitle, metaDescription, keywords, slug, type, status} = req.body;
 
@@ -114,13 +87,14 @@ router.post(
 
         const plainBody = he.decode(striptags(body));
         const excerpt = plainBody.length > 150 ? plainBody.substring(0, 150) + "..." : plainBody;
+        const uploadedImage = req.file ? await uploadImageToCloudinary(req.file, "blog") : null;
 
         const newPost = new BlogPost({
             title,
             excerpt,
             category,
             content: body,
-            imageUrl: req.file ? `/uploads/${req.file.filename}` : null,
+            imageUrl: uploadedImage?.url || null,
             seoTitle: seoTitle || title,
             metaDescription: metaDescription || excerpt,
             keywords: keywords ? getKeywords(keywords) : [],
@@ -134,12 +108,11 @@ router.post(
     }),
 );
 
-// PUT /api/blogs/:id: Update
 router.put(
     "/:id",
     auth,
     requireSuperAdmin,
-    upload.single("media"),
+    imageUpload.single("media"),
     expressAsyncHandler(async (req, res) => {
         const {title, body, category, seoTitle, metaDescription, keywords, slug, type, status} = req.body;
 
@@ -166,7 +139,10 @@ router.put(
         const plainBody = he.decode(striptags(body));
         updateData.excerpt = plainBody.length > 150 ? plainBody.substring(0, 150) + "..." : plainBody;
 
-        if (req.file) updateData.imageUrl = `/uploads/${req.file.filename}`;
+        if (req.file) {
+            const uploadedImage = await uploadImageToCloudinary(req.file, "blog");
+            updateData.imageUrl = uploadedImage.url;
+        }
 
         const updatedPost = await BlogPost.findOneAndUpdate({_id: req.params.id, ...getBlogTypeQuery("blog")}, updateData, {new: true, runValidators: true});
 
@@ -175,7 +151,6 @@ router.put(
     }),
 );
 
-// DELETE /api/blogs/:id
 router.delete(
     "/:id",
     auth,
@@ -183,11 +158,11 @@ router.delete(
     expressAsyncHandler(async (req, res) => {
         const post = await BlogPost.findOneAndDelete({_id: req.params.id, ...getBlogTypeQuery("blog")});
         if (!post) return res.status(404).json({message: "Post not found"});
+        await CommunityComment.deleteMany({contentType: "blog", contentId: req.params.id});
         res.json({message: "Post deleted successfully"});
     }),
 );
 
-// GET /api/blogs/:id: Single post
 router.get(
     "/:id",
     expressAsyncHandler(async (req, res) => {

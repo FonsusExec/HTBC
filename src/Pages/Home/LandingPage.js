@@ -320,7 +320,7 @@ export default function LandingPage() {
                             Here, faith comes to life through friendship, fellowship, and shared purpose. Whether it's through small groups, ministries, outreach programs, or Sunday coffee after Mass,
                             there's always a place for you to belong, serve, and be supported. Come as you are. Let's grow in grace together.
                         </p>
-                        <a href="#">Explore Our Community</a>
+                        <Link to="/community">Explore Our Community</Link>
                     </div>
                     <div className="community-image">
                         <img src={require("../../assets/img/htbc-commu.png")} alt="Community gathering" />

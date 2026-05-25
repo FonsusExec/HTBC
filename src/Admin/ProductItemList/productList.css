@@ -15,8 +15,8 @@
     --ecm-shadow: 0 2px 16px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.04);
     --ecm-radius: 14px;
     --ecm-radius-sm: 8px;
-    --ecm-font-body: "DM Sans", sans-serif;
-    --ecm-font-heading: "Sora", sans-serif;
+    --ecm-font-body: "Cabin", sans-serif;
+    --ecm-font-heading: "Cabin", sans-serif;
 }
 
 .ecm-wrapper {

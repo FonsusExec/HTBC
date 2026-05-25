@@ -1,10 +1,37 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import axios from "axios";
-import {Link} from "react-router-dom";
-import "./blog.css";
+import {useNavigate} from "react-router-dom";
 import Loading from "../../components/Loading";
+import "./blog.css";
 
 const fallbackBlogImage = require("../../assets/img/htbc-blog.jpg");
+const PAGE_LIMIT = 7;
+
+const decodeHtmlEntities = (value = "") => {
+    let text = String(value).replace(/&nbsp;|&#160;|\u00a0/gi, " ");
+
+    if (typeof document === "undefined") return text;
+
+    const textarea = document.createElement("textarea");
+    for (let i = 0; i < 2; i += 1) {
+        textarea.innerHTML = text;
+        text = textarea.value;
+    }
+
+    return text.replace(/&nbsp;|&#160;|\u00a0/gi, " ");
+};
+
+const stripHtml = (value = "") => {
+    const decodedValue = decodeHtmlEntities(value);
+
+    return decodeHtmlEntities(
+        decodedValue
+            .replace(/&nbsp;|&#160;|\u00a0/gi, " ")
+            .replace(/<[^>]*>/g, " "),
+    )
+        .replace(/\s+/g, " ")
+        .trim();
+};
 
 const getImageSrc = (imageUrl) => {
     if (!imageUrl) return fallbackBlogImage;
@@ -13,172 +40,238 @@ const getImageSrc = (imageUrl) => {
     return `/${imageUrl}`;
 };
 
-export default function Blog() {
-    const [posts, setPosts] = useState([]); // Current page's posts
-    const [totalPosts, setTotalPosts] = useState(0); // For pagination calc
-    const [currentPage, setCurrentPage] = useState(1); // Track page
-    const [searchTerm, setSearchTerm] = useState(""); // Search input
-    const [loading, setLoading] = useState(true); // Spinner state
-    const [categories, setCategories] = useState([]); // Unique categories
-    const limit = 4; // Posts per page (match your grid)
+const formatDate = (dateValue) => {
+    if (!dateValue) return "Recent";
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return "Recent";
 
-    // Fetch posts for current page + total count
+    return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+    });
+};
+
+const getSummary = (post) =>
+    stripHtml(post?.excerpt || post?.metaDescription || post?.content || "") || "Read the latest reflection from How To Be Catholic.";
+
+const getPaginationPages = (currentPage, totalPages) => {
+    if (totalPages <= 5) {
+        return Array.from({length: totalPages}, (_, index) => index + 1);
+    }
+
+    const pages = [1];
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
+
+    if (start > 2) pages.push("start-dots");
+
+    for (let page = start; page <= end; page += 1) {
+        pages.push(page);
+    }
+
+    if (end < totalPages - 1) pages.push("end-dots");
+
+    pages.push(totalPages);
+    return pages;
+};
+
+export default function Blog() {
+    const navigate = useNavigate();
+    const [posts, setPosts] = useState([]);
+    const [totalPosts, setTotalPosts] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [refreshKey, setRefreshKey] = useState(0);
+
     useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchTerm.trim());
+            setCurrentPage(1);
+        }, 350);
+
+        return () => clearTimeout(timer);
+    }, [searchTerm]);
+
+    useEffect(() => {
+        let isActive = true;
+
         const fetchPosts = async () => {
             try {
-                const params = {page: currentPage, limit, type: "blog"};
-                if (searchTerm) params.search = searchTerm; // Pass search to backend for server-side filtering
+                setLoading(true);
+                setError("");
 
-                const {data} = await axios.get("/api/blogs", {params});
-                setPosts(data.posts || []); // Array of current page
-                setTotalPosts(data.total || 0); // Total for pagination
+                const {data} = await axios.get("/api/blogs", {
+                    params: {
+                        page: currentPage,
+                        limit: PAGE_LIMIT,
+                        type: "blog",
+                        search: debouncedSearch,
+                    },
+                });
 
-                // Extract unique categories (from current page or refetch all if needed)
-                const uniqueCategories = [...new Set((data.posts || []).map((post) => post.category).filter(Boolean))];
-                setCategories(uniqueCategories);
-            } catch (error) {
-                console.error("Error fetching posts:", error);
-                // Fallback: Static posts for page 1
-                setPosts([
-                    {_id: 1, title: "Why Attending Mass Regularly...", excerpt: "Support our mission...", imageUrl: require("../../assets/img/blog-htbc1.png"), category: "Faith Formation"},
-                    {_id: 2, title: "Catholic Teachings on Forgiveness...", excerpt: "Helping maintain...", imageUrl: require("../../assets/img/blog-htbc2.png"), category: "Apologetics"},
-                    {_id: 3, title: "Exploring the Seven Sacraments...", excerpt: "Learn how sacraments...", imageUrl: require("../../assets/img/blog-htbc3.png"), category: "Spirituality"},
-                    {_id: 4, title: "How to Live Out Your Catholic Faith...", excerpt: "Growing spiritually...", imageUrl: require("../../assets/img/blog-htbc4.png"), category: "Faith Formation"},
-                ]);
-                setTotalPosts(11); // Assume 11 for fallback pagination
+                if (!isActive) return;
+                setPosts(data.posts || []);
+                setTotalPosts(data.total || 0);
+            } catch (err) {
+                if (!isActive) return;
+                setPosts([]);
+                setTotalPosts(0);
+                setError(err.response?.data?.message || "Unable to load blog posts right now.");
             } finally {
-                setLoading(false);
+                if (isActive) setLoading(false);
             }
         };
 
         fetchPosts();
-    }, [currentPage, searchTerm]); // Refetch on page/search change
 
-    const totalPages = Math.ceil(totalPosts / limit);
-    const handlePageChange = (page) => setCurrentPage(page);
-    const handlePrev = () => currentPage > 1 && setCurrentPage(currentPage - 1);
-    const handleNext = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
+        return () => {
+            isActive = false;
+        };
+    }, [currentPage, debouncedSearch, refreshKey]);
 
-    // Render page buttons (simple: show first/last + dots if >5 pages)
-    const renderPageNumbers = () => {
-        const pages = [];
-        if (totalPages <= 5) {
-            for (let i = 1; i <= totalPages; i++) {
-                pages.push(
-                    <button key={i} className={`page-number ${currentPage === i ? "active" : ""}`} onClick={() => handlePageChange(i)}>
-                        {i}
-                    </button>,
-                );
-            }
-        } else {
-            pages.push(
-                <button key={1} className={`page-number ${currentPage === 1 ? "active" : ""}`} onClick={() => handlePageChange(1)}>
-                    1
-                </button>,
-            );
-            if (currentPage > 3)
-                pages.push(
-                    <span key="dots1" className="dots">
-                        …
-                    </span>,
-                );
-            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
-                pages.push(
-                    <button key={i} className={`page-number ${currentPage === i ? "active" : ""}`} onClick={() => handlePageChange(i)}>
-                        {i}
-                    </button>,
-                );
-            }
-            if (currentPage < totalPages - 2)
-                pages.push(
-                    <span key="dots2" className="dots">
-                        …
-                    </span>,
-                );
-            pages.push(
-                <button key={totalPages} className={`page-number ${currentPage === totalPages ? "active" : ""}`} onClick={() => handlePageChange(totalPages)}>
-                    {totalPages}
-                </button>,
-            );
-        }
-        return pages;
+    const featuredPost = posts[0] || null;
+    const postCards = useMemo(() => posts.slice(featuredPost ? 1 : 0), [posts, featuredPost]);
+    const totalPages = Math.max(1, Math.ceil(totalPosts / PAGE_LIMIT));
+
+    const handlePostOpen = (post) => {
+        if (post?._id) navigate(`/blog/${post._id}`);
     };
 
-    if (loading) {
-        return (
-            <div className="loading">
-                <Loading />
-            </div>
-        );
-    }
+    const paginationPages = useMemo(() => getPaginationPages(currentPage, totalPages), [currentPage, totalPages]);
 
     return (
-        <div className="blog-wrapper">
-            {/* ---- Banner ---- */}
-            <section className="blog-hero">
-                <h1>Blog</h1>
-            </section>
-
-            {/* ---- Body Layout ---- */}
-            <section className="blog-content-page">
-                {/* Left: Featured Posts */}
-                <div className="left-section">
-                    <h2 className="featured-blog-title">Featured Posts</h2>
-                    <div className="blog-grid">
-                        {posts.map((post) => (
-                            <Link key={post._id} to={`/blog/${post._id}`} className="blog-card">
-                                <div className="blog-card-content">
-                                    <img src={getImageSrc(post.imageUrl)} alt={post.title} />
-                                    <h4>{post.title}</h4>
-                                    <p>{post.excerpt}</p>
-                                    <span className="category-tag">{post.category}</span>
-                                </div>
-                            </Link>
-                        ))}
-                        {posts.length === 0 && <p>No posts found. Try a different search or page.</p>}
-                    </div>
+        <div className="public-blog-page">
+            <section className="public-blog-banner">
+                <div className="public-blog-banner-content">
+                    <span>HTBC Reflections</span>
+                    <h1>Blog</h1>
                 </div>
-
-                {/* Right: Sidebar */}
-                <aside className="blog-sidebar">
-                    {/* Search */}
-                    <div className="blog-search">
-                        <span className="search-icon">🔍</span>
-                        <input
-                            type="text"
-                            placeholder="Search"
-                            value={searchTerm}
-                            onChange={(e) => {
-                                setSearchTerm(e.target.value);
-                                setCurrentPage(1); // Reset to page 1 on search
-                            }}
-                        />
-                    </div>
-
-                    {/* Categories */}
-                    <div className="blog-categories">
-                        <h3>Categories</h3>
-                        <ul>
-                            {categories.map((cat) => (
-                                <li key={cat}>{cat}</li> // Add onClick for filter later
-                            ))}
-                        </ul>
-                    </div>
-                </aside>
             </section>
 
-            {/* Pagination */}
-            <div className="pagination-wrapper">
-                <button className="page-btn prev" onClick={handlePrev} disabled={currentPage === 1}>
-                    ‹ Previous
-                </button>
+            <main className="public-blog-container">
+                <section className="public-blog-controls" aria-label="Blog controls">
+                    <div>
+                        <p className="public-blog-eyebrow">Latest Reflections</p>
+                        <h2>Faith, formation, and Catholic living</h2>
+                    </div>
 
-                <div className="page-numbers">{renderPageNumbers()}</div>
+                    <label className="public-blog-search">
+                        <span>Search</span>
+                        <input type="search" placeholder="Search blog posts" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                    </label>
+                </section>
 
-                <button className="page-btn next" onClick={handleNext} disabled={currentPage === totalPages}>
-                    Next ›
-                </button>
-            </div>
+                {loading ? (
+                    <section className="public-blog-state">
+                        <Loading message="Loading blog posts..." />
+                    </section>
+                ) : error ? (
+                    <section className="public-blog-state public-blog-state--error">
+                        <p>{error}</p>
+                        <button type="button" onClick={() => setRefreshKey((key) => key + 1)}>
+                            Retry
+                        </button>
+                    </section>
+                ) : posts.length === 0 ? (
+                    <section className="public-blog-state">
+                        <h3>No blog posts found</h3>
+                        <p>Try a different search term or check back soon.</p>
+                    </section>
+                ) : (
+                    <>
+                        {featuredPost && (
+                            <section className="public-blog-featured">
+                                <div className="public-blog-featured-image">
+                                    <img src={getImageSrc(featuredPost.imageUrl)} alt={featuredPost.title} />
+                                </div>
+                                <div className="public-blog-featured-copy">
+                                    <span className="public-blog-category-label">{featuredPost.category || "Reflection"}</span>
+                                    <h2>{featuredPost.title}</h2>
+                                    <p>{getSummary(featuredPost)}</p>
+                                    <div className="public-blog-list-meta">
+                                        <time>{formatDate(featuredPost.createdAt)}</time>
+                                    </div>
+                                    <button type="button" className="public-blog-read-btn" onClick={() => handlePostOpen(featuredPost)}>
+                                        Read More
+                                    </button>
+                                </div>
+                            </section>
+                        )}
+
+                        {postCards.length > 0 && (
+                            <section className="public-blog-list-section">
+                                <div className="public-blog-section-heading">
+                                    <h3>More Blog Posts</h3>
+                                    <span>{totalPosts} posts</span>
+                                </div>
+
+                                <div className="public-blog-grid">
+                                    {postCards.map((post) => (
+                                        <article className="public-blog-card" key={post._id}>
+                                            <img src={getImageSrc(post.imageUrl)} alt={post.title} />
+                                            <div className="public-blog-card-body">
+                                                <span className="public-blog-category-label">{post.category || "Reflection"}</span>
+                                                <h4>{post.title}</h4>
+                                                <p>{getSummary(post)}</p>
+                                                <div className="public-blog-card-footer">
+                                                    <time>{formatDate(post.createdAt)}</time>
+                                                    <button type="button" onClick={() => handlePostOpen(post)}>
+                                                        Read
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+
+                        {totalPages > 1 && (
+                            <div className="public-blog-pagination">
+                                <button type="button" onClick={() => setCurrentPage((page) => Math.max(1, page - 1))} disabled={currentPage === 1}>
+                                    Previous
+                                </button>
+
+                                <div className="public-blog-page-numbers" aria-label="Blog pagination pages">
+                                    {paginationPages.map((page) =>
+                                        typeof page === "number" ? (
+                                            <button
+                                                key={page}
+                                                type="button"
+                                                className={`public-blog-page-number ${currentPage === page ? "is-active" : ""}`}
+                                                onClick={() => setCurrentPage(page)}
+                                                aria-current={currentPage === page ? "page" : undefined}
+                                            >
+                                                {page}
+                                            </button>
+                                        ) : (
+                                            <span key={page} className="public-blog-page-dots">
+                                                ...
+                                            </span>
+                                        ),
+                                    )}
+                                </div>
+
+                                <span className="public-blog-pagination__status">
+                                    Page {currentPage} of {totalPages}
+                                </span>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                                    disabled={currentPage === totalPages}
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        )}
+                    </>
+                )}
+            </main>
         </div>
     );
 }

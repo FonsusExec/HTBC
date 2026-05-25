@@ -22,7 +22,7 @@
 .dt-page {
     min-height: 100vh;
     background: var(--bg-page);
-    font-family: "Source Sans 3", sans-serif;
+    font-family: "Cabin", sans-serif;
     color: var(--text-dark);
     padding: 40px 24px 60px;
 }

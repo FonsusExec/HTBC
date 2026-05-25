@@ -34,6 +34,7 @@ import CreateResources from "./Admin/Resources/CreateResources";
 import ResourceList from "./Admin/ResourceList/ResourceList";
 import AboutUs from "./Pages/AboutUs/AboutUs";
 import Donate from "./Pages/Donate/Donate";
+import Community from "./Pages/Community/Community";
 import EditResource from "./Admin/Resources/EditResource";
 import AddProduct from "./Admin/ProductItems/AddProduct";
 import ProductList from "./Admin/ProductItemList/ProductList";
@@ -116,6 +117,7 @@ function App() {
                                         <Route path="about-us" element={<AboutUs />} />
                                         <Route path="contact-us" element={<AboutUs />} />
                                         <Route path="donate" element={<Donate />} />
+                                        <Route path="community" element={<Community />} />
                                         <Route path="donationform" element={<DonationForm />} />
                                         <Route path="donationform/:donationId" element={<DonationForm />} />
                                         <Route path="*" element={<div>404 Not Found</div>} />

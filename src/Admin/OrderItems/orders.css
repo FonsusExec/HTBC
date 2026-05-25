@@ -1,7 +1,5 @@
 /* ===== Orders Page ===== */
 
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Sora:wght@600;700;800&display=swap");
-
 :root {
     --ord-bg: #f5f4f0;
     --ord-card-bg: #ffffff;
@@ -17,8 +15,8 @@
     --ord-shadow: 0 2px 16px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.04);
     --ord-radius: 14px;
     --ord-radius-sm: 8px;
-    --ord-font-body: "DM Sans", sans-serif;
-    --ord-font-heading: "Sora", sans-serif;
+    --ord-font-body: "Cabin", sans-serif;
+    --ord-font-heading: "Cabin", sans-serif;
 
     /* status colours */
     --ord-green: #2e7d32;

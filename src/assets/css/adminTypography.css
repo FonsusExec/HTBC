@@ -1,0 +1,104 @@
+.admin-layout {
+    --admin-font-body: "Cabin", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --admin-font-heading: "Cabin", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --admin-text-primary: #102a43;
+    --admin-text-body: #172033;
+    --admin-text-muted: #64748b;
+    --admin-text-soft: #475569;
+    font-family: var(--admin-font-body);
+    color: var(--admin-text-body);
+    font-size: 14px;
+    line-height: 1.5;
+    letter-spacing: 0;
+}
+
+.admin-layout .ecm-wrapper,
+.admin-layout .al-wrapper,
+.admin-layout .cu-wrapper,
+.admin-layout .ord-wrapper,
+.admin-layout .vu-wrapper,
+.admin-layout .dt-page,
+.admin-layout .admin-page {
+    --ecm-font-body: var(--admin-font-body);
+    --ecm-font-heading: var(--admin-font-heading);
+    --al-font-body: var(--admin-font-body);
+    --al-font-heading: var(--admin-font-heading);
+    --cu-font-body: var(--admin-font-body);
+    --cu-font-heading: var(--admin-font-heading);
+    --ord-font-body: var(--admin-font-body);
+    --ord-font-heading: var(--admin-font-heading);
+    --vu-font-body: var(--admin-font-body);
+    --vu-font-heading: var(--admin-font-heading);
+    font-family: var(--admin-font-body);
+}
+
+.admin-layout h1,
+.admin-layout h2,
+.admin-layout h3,
+.admin-layout h4,
+.admin-layout .card-header h1,
+.admin-layout .card-header h2,
+.admin-layout .ecm-title,
+.admin-layout .al-title,
+.admin-layout .cu-title,
+.admin-layout .ord-title,
+.admin-layout .vu-title {
+    color: var(--admin-text-primary);
+    font-family: var(--admin-font-heading);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: 0;
+}
+
+.admin-layout p,
+.admin-layout small,
+.admin-layout td,
+.admin-layout th,
+.admin-layout label,
+.admin-layout input,
+.admin-layout textarea,
+.admin-layout select,
+.admin-layout button {
+    font-family: var(--admin-font-body);
+    letter-spacing: 0;
+}
+
+.admin-layout p,
+.admin-layout small {
+    line-height: 1.5;
+}
+
+.admin-layout input,
+.admin-layout textarea,
+.admin-layout select {
+    color: var(--admin-text-body);
+}
+
+.admin-layout button {
+    font-weight: 800;
+}
+
+.admin-layout .admin-card,
+.admin-layout .dash-panel,
+.admin-layout .cm-card,
+.admin-layout .cm-section,
+.admin-layout .ecm-card,
+.admin-layout .al-card,
+.admin-layout .cu-card,
+.admin-layout .ord-card,
+.admin-layout .vu-card {
+    color: var(--admin-text-body);
+}
+
+.admin-layout .admin-card p,
+.admin-layout .dash-header p,
+.admin-layout .dash-panel-heading p,
+.admin-layout .cm-header p,
+.admin-layout .cm-section-header p,
+.admin-layout .ecm-subtitle,
+.admin-layout .al-subtitle,
+.admin-layout .cu-subtitle,
+.admin-layout .ord-subtitle,
+.admin-layout .vu-subtitle {
+    color: var(--admin-text-muted);
+}

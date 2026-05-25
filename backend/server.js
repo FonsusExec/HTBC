@@ -24,9 +24,11 @@ import newsRouter from "./routes/newsRoutes.js";
 import resourceRouter from "./routes/resourceRoutes.js";
 import impactStoryRouter from "./routes/impactStoryRoutes.js";
 import contactMessageRouter from "./routes/contactMessageRoutes.js";
+import communityRouter from "./routes/communityRoutes.js";
 import Category from "./models/categoryModel.js";
 import Role from "./models/roleModel.js";
-import multer from "multer"; // Keep if used elsewhere; otherwise, move to blogRoutes.js
+import imageUpload from "./middleware/imageUpload.js";
+import {uploadImagesToCloudinary} from "./utils/cloudinary.js";
 // ← ADD THIS POLYFILL: For ES modules
 import {fileURLToPath} from "url";
 import {dirname} from "path";
@@ -48,8 +50,8 @@ const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SEC
 const paypalClient =
     process.env.PAYPAL_CLIENT_ID && process.env.PAYPAL_CLIENT_SECRET ? new paypal.core.PayPalHttpClient(new paypal.core.SandboxEnvironment(process.env.PAYPAL_CLIENT_ID, process.env.PAYPAL_CLIENT_SECRET)) : null;
 
-// ← ADD THIS BLOCK: Auto-create uploads folder (before Multer config)
-const uploadDir = path.join(__dirname, "uploads"); // Builds full path, e.g., C:\...\backend\uploads
+// Keep local uploads mounted for existing media and PDF resources while new image uploads use Cloudinary.
+const uploadDir = path.join(__dirname, "uploads");
 console.log(__dirname);
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, {recursive: true}); // Creates folder if gone
@@ -125,17 +127,6 @@ passport.deserializeUser(async (id, done) => {
 });
 
 app.use(passport.initialize());
-
-// Multer config: Save to /uploads, resize optional later (keep here if used elsewhere)
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); // Unique name: timestamp.ext
-    },
-});
-const upload = multer({storage});
 
 const createHttpError = (message, statusCode = 400) => {
     const error = new Error(message);
@@ -942,7 +933,7 @@ app.post(
     "/api/products",
     auth,
     requireSuperAdmin,
-    upload.array("images", 10), // ← Changed to .array() - accepts multiple files under "images"
+    imageUpload.array("images", 10),
     expressAsyncHandler(async (req, res) => {
         const {title, category, subCategory, description, price, stock, sku, mainIndex} = req.body;
 
@@ -970,7 +961,7 @@ app.post(
             return res.status(400).json({message: "Selected category was not found"});
         }
 
-        const uploadedImages = req.files.map((file) => `/uploads/${file.filename}`);
+        const uploadedImages = await uploadImagesToCloudinary(req.files, "products");
         const requestedMainIndex = Number.parseInt(mainIndex, 10);
         const safeMainIndex = Number.isInteger(requestedMainIndex) && requestedMainIndex >= 0 && requestedMainIndex < uploadedImages.length ? requestedMainIndex : 0;
         const mainImage = uploadedImages[safeMainIndex];
@@ -1059,7 +1050,7 @@ app.put(
     "/api/products/:id",
     auth,
     requireSuperAdmin,
-    upload.array("images", 10), // Allow new image uploads
+    imageUpload.array("images", 10),
     expressAsyncHandler(async (req, res) => {
         const {title, category, subCategory, description, price, stock, mainIndex} = req.body;
         const existingImages = req.body.existingImages ? (Array.isArray(req.body.existingImages) ? req.body.existingImages : [req.body.existingImages]) : [];
@@ -1086,7 +1077,7 @@ app.put(
 
         // Add newly uploaded images
         if (req.files && req.files.length > 0) {
-            const newImagePaths = req.files.map((file) => `/uploads/${file.filename}`);
+            const newImagePaths = await uploadImagesToCloudinary(req.files, "products");
             allImages = [...allImages, ...newImagePaths];
         }
 
@@ -1125,8 +1116,7 @@ app.delete(
             return res.status(404).json({message: "Product not found"});
         }
 
-        // Optional: Delete image files from uploads folder (advanced)
-        // You can add fs.unlink logic here later if needed
+        // Optional: delete Cloudinary assets later if you start storing public IDs.
 
         res.json({message: "Product deleted successfully"});
     }),
@@ -1356,6 +1346,7 @@ app.use("/api/news", newsRouter);
 app.use("/api/resources", resourceRouter);
 app.use("/api/impact-stories", impactStoryRouter);
 app.use("/api/contact-messages", contactMessageRouter);
+app.use("/api/community", communityRouter);
 
 app.use((err, req, res, next) => {
     if (res.headersSent) {

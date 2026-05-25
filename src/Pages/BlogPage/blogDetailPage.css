@@ -90,6 +90,11 @@
     box-shadow: 0 16px 42px rgba(13, 53, 100, 0.1);
 }
 
+.public-blog-comments {
+    width: min(920px, calc(100% - 40px));
+    margin: 28px auto 76px;
+}
+
 .public-blog-meta {
     display: flex;
     flex-wrap: wrap;
@@ -205,6 +210,11 @@
     .public-blog-article {
         width: min(100% - 28px, 560px);
         margin-top: -28px;
+    }
+
+    .public-blog-comments {
+        width: min(100% - 28px, 560px);
+        margin-bottom: 54px;
     }
 
     .public-blog-body {

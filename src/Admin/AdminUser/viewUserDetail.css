@@ -15,8 +15,8 @@
     --vu-shadow-md: 0 4px 24px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
     --vu-radius: 14px;
     --vu-radius-sm: 8px;
-    --vu-font-body: "DM Sans", sans-serif;
-    --vu-font-heading: "Sora", sans-serif;
+    --vu-font-body: "Cabin", sans-serif;
+    --vu-font-heading: "Cabin", sans-serif;
 }
 
 /* ── Wrapper ──────────────────────────────────────────────────────── */

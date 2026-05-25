@@ -25,6 +25,7 @@ export default function Navigation() {
         {label: "News", to: "/news", match: ["/news"]},
         {label: "Shop", to: "/all-products", match: ["/all-products", "/product"]},
         {label: "Donate", to: "/donate", match: ["/donate", "/donationform"]},
+        {label: "Community", to: "/community", match: ["/community"]},
         // {label: "Contact", to: "/contact-us", match: ["/contact-us"]},
     ];
 

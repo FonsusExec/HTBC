@@ -1,28 +1,11 @@
 import express from "express";
 import expressAsyncHandler from "express-async-handler";
-import fs from "fs";
-import multer from "multer";
-import path from "path";
-import {dirname} from "path";
-import {fileURLToPath} from "url";
 import ImpactStory from "../models/impactStoryModel.js";
 import auth, {requireSuperAdmin} from "../middleware/auth.js";
+import imageUpload from "../middleware/imageUpload.js";
+import {uploadImageToCloudinary} from "../utils/cloudinary.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 const router = express.Router();
-
-const uploadDir = path.join(__dirname, "../uploads");
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, {recursive: true});
-}
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, "uploads/"),
-    filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)),
-});
-
-const upload = multer({storage});
 
 router.get(
     "/",
@@ -49,7 +32,7 @@ router.post(
     "/",
     auth,
     requireSuperAdmin,
-    upload.single("image"),
+    imageUpload.single("image"),
     expressAsyncHandler(async (req, res) => {
         const {title, description} = req.body;
 
@@ -57,10 +40,12 @@ router.post(
             return res.status(400).json({message: "Title, image and description are required"});
         }
 
+        const uploadedImage = await uploadImageToCloudinary(req.file, "impact-stories");
+
         const story = await ImpactStory.create({
             title: title.trim(),
             description: description.trim(),
-            imageUrl: `/uploads/${req.file.filename}`,
+            imageUrl: uploadedImage.url,
         });
 
         res.status(201).json({message: "Impact story created", story});
@@ -80,7 +65,7 @@ router.put(
     "/:id",
     auth,
     requireSuperAdmin,
-    upload.single("image"),
+    imageUpload.single("image"),
     expressAsyncHandler(async (req, res) => {
         const {title, description} = req.body;
 
@@ -93,7 +78,10 @@ router.put(
 
         story.title = title.trim();
         story.description = description.trim();
-        if (req.file) story.imageUrl = `/uploads/${req.file.filename}`;
+        if (req.file) {
+            const uploadedImage = await uploadImageToCloudinary(req.file, "impact-stories");
+            story.imageUrl = uploadedImage.url;
+        }
 
         const updatedStory = await story.save();
         res.json({message: "Impact story updated", story: updatedStory});

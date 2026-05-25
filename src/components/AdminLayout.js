@@ -3,6 +3,7 @@ import AdminSidebar from "../Global/AdminSidebar";
 import {Outlet} from "react-router-dom";
 import AdminHeader from "../Global/AdminHeader";
 import "../assets/css/adminLayout.css";
+import "../assets/css/adminTypography.css";
 
 export default function AdminLayout({children}) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);

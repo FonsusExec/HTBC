@@ -27,6 +27,7 @@ const initialData = {
     users: [],
     donations: [],
     stories: [],
+    communityComments: [],
     totals: {
         blogs: 0,
         news: 0,
@@ -111,9 +112,10 @@ export default function Dashboard() {
             axios.get("/api/admin/users"),
             axios.get("/api/admin/donations", {...authConfig, params: {page: 1, limit: 100}}),
             axios.get("/api/impact-stories", {params: {page: 1, limit: 10}}),
+            axios.get("/api/community/admin/comments", {...authConfig, params: {status: "pending"}}),
         ]);
 
-        const [ordersResult, blogsResult, newsResult, productsResult, usersResult, donationsResult, storiesResult] = results;
+        const [ordersResult, blogsResult, newsResult, productsResult, usersResult, donationsResult, storiesResult, communityCommentsResult] = results;
         const orders = getList(ordersResult, "orders");
         const blogs = getList(blogsResult, "posts");
         const news = getList(newsResult, "articles");
@@ -121,6 +123,7 @@ export default function Dashboard() {
         const users = getList(usersResult, "users");
         const donations = getList(donationsResult, "donations");
         const stories = getList(storiesResult, "stories");
+        const communityComments = getList(communityCommentsResult, "comments");
 
         setData({
             orders,
@@ -130,6 +133,7 @@ export default function Dashboard() {
             users,
             donations,
             stories,
+            communityComments,
             totals: {
                 blogs: getTotal(blogsResult, blogs),
                 news: getTotal(newsResult, news),
@@ -170,7 +174,7 @@ export default function Dashboard() {
             },
             {
                 label: "Pending Comments",
-                value: 0,
+                value: data.communityComments.length,
                 helper: "Community comments queue",
                 icon: <FaComments />,
                 tone: "amber",
@@ -204,6 +208,7 @@ export default function Dashboard() {
         const pendingDonations = data.donations.filter((donation) => isPendingStatus(donation.status));
         const pendingStories = data.stories.filter((story) => isPendingStatus(story.status));
         const lowStockProducts = data.products.filter((product) => Number(product.stock || 0) <= 5);
+        const pendingCommunityComments = data.communityComments;
 
         const items = [];
 
@@ -212,6 +217,15 @@ export default function Dashboard() {
                 title: "Impact stories need approval",
                 detail: `${pendingStories.length} story ${pendingStories.length === 1 ? "is" : "are"} waiting for review.`,
                 to: "/admin/donation-story-list",
+                severity: "warning",
+            });
+        }
+
+        if (pendingCommunityComments.length) {
+            items.push({
+                title: "Community comments need approval",
+                detail: `${pendingCommunityComments.length} comment ${pendingCommunityComments.length === 1 ? "is" : "are"} waiting for moderation.`,
+                to: "/admin/community",
                 severity: "warning",
             });
         }
