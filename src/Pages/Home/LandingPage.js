@@ -31,11 +31,7 @@ const decodeHtmlEntities = (value = "") => {
 const stripHtml = (value = "") => {
     const decodedValue = decodeHtmlEntities(value);
 
-    return decodeHtmlEntities(
-        decodedValue
-            .replace(/&nbsp;|&#160;|\u00a0/gi, " ")
-            .replace(/<[^>]*>/g, " "),
-    )
+    return decodeHtmlEntities(decodedValue.replace(/&nbsp;|&#160;|\u00a0/gi, " ").replace(/<[^>]*>/g, " "))
         .replace(/\s+/g, " ")
         .trim();
 };
@@ -84,6 +80,8 @@ export default function LandingPage() {
     const [latestNews, setLatestNews] = React.useState([]);
     const [resources, setResources] = React.useState([]);
     const [impactStories, setImpactStories] = React.useState([]);
+    const [activeProductIndex, setActiveProductIndex] = React.useState(0);
+    const [activeDonationIndex, setActiveDonationIndex] = React.useState(0);
     const [contentLoading, setContentLoading] = React.useState({
         blog: true,
         news: true,
@@ -121,8 +119,8 @@ export default function LandingPage() {
             const [blogResult, newsResult, resourcesResult, impactStoriesResult] = await Promise.allSettled([
                 axios.get("/api/blogs", {params: {page: 1, limit: 1, type: "blog"}}),
                 axios.get("/api/news", {params: {page: 1, limit: 8, sort: "newest"}}),
-                axios.get("/api/resources", {params: {page: 1, limit: 5}}),
-                axios.get("/api/impact-stories", {params: {page: 1, limit: 3}}),
+                axios.get("/api/resources", {params: {page: 1, limit: 4}}),
+                axios.get("/api/impact-stories", {params: {page: 1, limit: 4}}),
             ]);
 
             if (!isMounted) return;
@@ -146,14 +144,14 @@ export default function LandingPage() {
 
             if (resourcesResult.status === "fulfilled") {
                 const resourcesData = resourcesResult.value.data;
-                setResources(Array.isArray(resourcesData) ? resourcesData : resourcesData?.resources || []);
+                setResources((Array.isArray(resourcesData) ? resourcesData : resourcesData?.resources || []).slice(0, 4));
             } else {
                 nextErrors.resources = resourcesResult.reason?.response?.data?.message || "Resources are unavailable right now.";
             }
 
             if (impactStoriesResult.status === "fulfilled") {
                 const storiesData = impactStoriesResult.value.data;
-                setImpactStories(Array.isArray(storiesData) ? storiesData : storiesData?.stories || []);
+                setImpactStories((Array.isArray(storiesData) ? storiesData : storiesData?.stories || []).slice(0, 4));
             } else {
                 nextErrors.donations = impactStoriesResult.reason?.response?.data?.message || "Donation stories are unavailable right now.";
             }
@@ -169,10 +167,36 @@ export default function LandingPage() {
         };
     }, []);
 
+    const featuredProducts = React.useMemo(() => products.slice(0, 4), [products]);
+    const featuredDonationStories = React.useMemo(() => impactStories.slice(0, 4), [impactStories]);
+
+    React.useEffect(() => {
+        setActiveProductIndex(0);
+    }, [featuredProducts.length]);
+
+    React.useEffect(() => {
+        setActiveDonationIndex(0);
+    }, [featuredDonationStories.length]);
+
     const latestBlogImage = getImageSrc(latestBlog?.imageUrl, fallbackBlogImage);
     const latestBlogExcerpt = stripHtml(latestBlog?.excerpt || latestBlog?.metaDescription || latestBlog?.content || "") || "Read the latest reflection from our parish community.";
-    const featuredProducts = products.slice(0, 4);
     const cartCount = getCartCount();
+
+    const goToPreviousProduct = () => {
+        setActiveProductIndex((current) => (current === 0 ? featuredProducts.length - 1 : current - 1));
+    };
+
+    const goToNextProduct = () => {
+        setActiveProductIndex((current) => (current + 1) % featuredProducts.length);
+    };
+
+    const goToPreviousDonation = () => {
+        setActiveDonationIndex((current) => (current === 0 ? featuredDonationStories.length - 1 : current - 1));
+    };
+
+    const goToNextDonation = () => {
+        setActiveDonationIndex((current) => (current + 1) % featuredDonationStories.length);
+    };
 
     const scrollLatestNews = (direction) => {
         if (!newsTrackRef.current) return;
@@ -205,7 +229,7 @@ export default function LandingPage() {
                         simple: to know Christ, grow in His love, and share that love with the world. Through the Eucharist, Scripture, and fellowship, we strive to reflect God's light in our homes,
                         neighborhoods, and beyond. Join us as we walk in faith, grow in grace, and build a vibrant Catholic community, one heart at a time.
                     </p>
-                    <a href="#">Read More</a>
+                    <a href="#/about-us">Read More</a>
                 </div>
 
                 <div className="blog-section">
@@ -282,27 +306,47 @@ export default function LandingPage() {
                         <div className="header-content">
                             <h2>Discover Our Featured Products</h2>
 
-                            <Link to="/cart" className="cart-badge" aria-label={`View cart with ${cartCount} items`}>
-                                <p>{cartCount}</p>
-                                <img src={require("../../assets/img/htbc-cart.png")} alt="Cart" />
-                            </Link>
+                            <div className="shop-header-actions">
+                                <Link to="/cart" className="cart-badge" aria-label={`View cart with ${cartCount} items`}>
+                                    <span className="cart-count">{cartCount}</span>
+                                    <img src={require("../../assets/img/htbc-cart.png")} alt="Cart" />
+                                </Link>
 
-                            <Link to="/all-products" className="view-all" aria-label="View all products">
-                                <FontAwesomeIcon icon={faAngleRight} className="news-arrow" />
-                            </Link>
+                                <Link to="/all-products" className="view-all" aria-label="View all products">
+                                    <FontAwesomeIcon icon={faAngleRight} className="news-arrow" />
+                                </Link>
+                            </div>
                         </div>
                     </div>
-                    <div className="shop-grid">
-                        {loading ? (
-                            <div className="shop-loading">
-                                <Loading message="Loading products..." />
+                    {loading ? (
+                        <div className="shop-loading">
+                            <Loading message="Loading products..." />
+                        </div>
+                    ) : error ? (
+                        <div className="shop-error">{error}</div>
+                    ) : featuredProducts.length === 0 ? (
+                        <div className="shop-error">No products have been posted yet.</div>
+                    ) : (
+                        <div className="landing-card-carousel shop-carousel">
+                            {featuredProducts.length > 1 && (
+                                <button type="button" className="landing-card-carousel-btn landing-card-carousel-btn--prev" onClick={goToPreviousProduct} aria-label="Previous product">
+                                    <FontAwesomeIcon icon={faAngleLeft} />
+                                </button>
+                            )}
+                            <div className="landing-card-carousel__viewport">
+                                <div className="shop-grid shop-grid--carousel" style={{"--landing-carousel-index": activeProductIndex}}>
+                                    {featuredProducts.map((product) => (
+                                        <Product key={getProductId(product)} product={product} />
+                                    ))}
+                                </div>
                             </div>
-                        ) : error ? (
-                            <div className="shop-error">{error}</div>
-                        ) : (
-                            featuredProducts.map((product) => <Product key={getProductId(product)} product={product} />)
-                        )}
-                    </div>
+                            {featuredProducts.length > 1 && (
+                                <button type="button" className="landing-card-carousel-btn landing-card-carousel-btn--next" onClick={goToNextProduct} aria-label="Next product">
+                                    <FontAwesomeIcon icon={faAngleRight} />
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 <React.Suspense fallback={<Loading message="Loading resources..." />}>
@@ -339,22 +383,38 @@ export default function LandingPage() {
                         </div>
                     ) : contentErrors.donations ? (
                         <div className="landing-section-state landing-section-state--error">{contentErrors.donations}</div>
-                    ) : impactStories.length === 0 ? (
+                    ) : featuredDonationStories.length === 0 ? (
                         <div className="landing-section-state">No donation stories have been posted yet.</div>
                     ) : (
-                        <div className="donate-grid">
-                            {impactStories.map((story) => (
-                                <div key={story._id} className="donate-item">
-                                    <img src={story.imageUrl || fallbackDonationImage} alt={story.title} />
-                                    <div className="donate-overlay">
-                                        <Link to={`/donationform/${story._id}`} className="donate-button">
-                                            Donate
-                                        </Link>
-                                    </div>
-                                    <p>{story.title}</p>
-                                    <p className="description">{truncateText(story.description)}</p>
+                        <div className="landing-card-carousel donate-carousel">
+                            {featuredDonationStories.length > 1 && (
+                                <button type="button" className="landing-card-carousel-btn landing-card-carousel-btn--prev" onClick={goToPreviousDonation} aria-label="Previous donation story">
+                                    <FontAwesomeIcon icon={faAngleLeft} />
+                                </button>
+                            )}
+                            <div className="landing-card-carousel__viewport">
+                                <div className="donate-grid donate-grid--carousel" style={{"--landing-carousel-index": activeDonationIndex}}>
+                                    {featuredDonationStories.map((story) => (
+                                        <div key={story._id} className="donate-item">
+                                            <div className="donate-media">
+                                                <img src={story.imageUrl || fallbackDonationImage} alt={story.title} />
+                                                <div className="donate-overlay">
+                                                    <Link to={`/donationform/${story._id}`} className="donate-button">
+                                                        Donate
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                            <p>{story.title}</p>
+                                            <p className="description">{truncateText(story.description)}</p>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            </div>
+                            {featuredDonationStories.length > 1 && (
+                                <button type="button" className="landing-card-carousel-btn landing-card-carousel-btn--next" onClick={goToNextDonation} aria-label="Next donation story">
+                                    <FontAwesomeIcon icon={faAngleRight} />
+                                </button>
+                            )}
                         </div>
                     )}
                 </div>

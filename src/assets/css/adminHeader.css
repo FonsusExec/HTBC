@@ -32,10 +32,6 @@
     font-size: 17px;
 }
 
-.admin-logo {
-    height: 34px;
-}
-
 /* Right */
 .admin-header-right {
     display: flex;
@@ -51,24 +47,24 @@
     color: #333;
 }
 
-.admin-user {
+.admin-greeting {
     display: flex;
     align-items: center;
-    gap: 8px;
-    cursor: pointer;
+    gap: 5px;
+    color: #102a43;
+    font-size: 15px;
+    line-height: 1;
+    white-space: nowrap;
 }
 
-.admin-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    object-fit: cover;
+.admin-greeting span {
+    color: #64748b;
+    font-weight: 700;
 }
 
-.admin-name {
-    font-size: 14px;
-    font-weight: 500;
-    color: #333;
+.admin-greeting strong {
+    color: #0b557f;
+    font-weight: 900;
 }
 
 @media (max-width: 980px) {
@@ -89,7 +85,10 @@
 }
 
 @media (max-width: 520px) {
-    .admin-name {
-        display: none;
+    .admin-greeting {
+        align-items: flex-end;
+        flex-direction: column;
+        gap: 3px;
+        font-size: 13px;
     }
 }

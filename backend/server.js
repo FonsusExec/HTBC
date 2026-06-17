@@ -25,6 +25,8 @@ import resourceRouter from "./routes/resourceRoutes.js";
 import impactStoryRouter from "./routes/impactStoryRoutes.js";
 import contactMessageRouter from "./routes/contactMessageRoutes.js";
 import communityRouter from "./routes/communityRoutes.js";
+import aboutRouter from "./routes/aboutRoutes.js";
+import testimonialRouter from "./routes/testimonialRoutes.js";
 import Category from "./models/categoryModel.js";
 import Role from "./models/roleModel.js";
 import imageUpload from "./middleware/imageUpload.js";
@@ -1347,6 +1349,8 @@ app.use("/api/resources", resourceRouter);
 app.use("/api/impact-stories", impactStoryRouter);
 app.use("/api/contact-messages", contactMessageRouter);
 app.use("/api/community", communityRouter);
+app.use("/api/about", aboutRouter);
+app.use("/api/testimonials", testimonialRouter);
 
 app.use((err, req, res, next) => {
     if (res.headersSent) {

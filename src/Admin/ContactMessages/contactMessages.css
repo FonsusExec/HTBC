@@ -1,0 +1,528 @@
+.contact-admin-page {
+    min-height: 100%;
+    padding: 8px;
+    color: #172033;
+}
+
+.contact-admin-card {
+    padding: 24px;
+    border: 1px solid #e5edf3;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 10px 24px rgba(16, 42, 67, 0.05);
+}
+
+.contact-admin-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.contact-admin-eyebrow {
+    margin: 0 0 6px;
+    color: #0b557f;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.contact-admin-header h1 {
+    margin: 0;
+    color: #102a43;
+    font-size: 28px;
+}
+
+.contact-admin-header p {
+    margin: 8px 0 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.contact-admin-icon,
+.contact-admin-stat span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #eef6fb;
+    color: #0b557f;
+}
+
+.contact-admin-icon {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    font-size: 20px;
+}
+
+.contact-admin-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.contact-admin-stat {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 4px 12px;
+    border: 1px solid #e5edf3;
+    border-radius: 8px;
+    background: #fbfdff;
+    padding: 16px;
+}
+
+.contact-admin-stat span {
+    grid-row: span 2;
+    width: 40px;
+    height: 40px;
+}
+
+.contact-admin-stat strong {
+    color: #102a43;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.contact-admin-stat small {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: capitalize;
+}
+
+.contact-admin-toolbar {
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) 160px 180px auto;
+    gap: 12px;
+    align-items: end;
+    margin-bottom: 18px;
+}
+
+.contact-admin-search {
+    position: relative;
+    display: block;
+}
+
+.contact-admin-search span {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    color: #64748b;
+    transform: translateY(-50%);
+}
+
+.contact-admin-search input,
+.contact-admin-toolbar select {
+    width: 100%;
+    min-height: 42px;
+    border: 1px solid #d8e1ea;
+    border-radius: 8px;
+    background: #fff;
+    color: #172033;
+    font: inherit;
+    outline: none;
+}
+
+.contact-admin-search input {
+    padding: 0 12px 0 38px;
+}
+
+.contact-admin-toolbar select {
+    padding: 0 12px;
+}
+
+.contact-admin-search input:focus,
+.contact-admin-toolbar select:focus {
+    border-color: #efbf04;
+    box-shadow: 0 0 0 3px rgba(239, 191, 4, 0.18);
+}
+
+.contact-admin-toolbar button {
+    min-height: 42px;
+    border: 1px solid #d8e1ea;
+    border-radius: 8px;
+    background: #fff;
+    color: #172033;
+    cursor: pointer;
+    font-weight: 900;
+    padding: 0 16px;
+}
+
+.contact-admin-toolbar button:hover {
+    border-color: #efbf04;
+    background: #fff9df;
+}
+
+.contact-admin-table-wrapper {
+    overflow-x: auto;
+    border: 1px solid #e5edf3;
+    border-radius: 8px;
+}
+
+.contact-admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+}
+
+.contact-admin-table thead tr {
+    border-bottom: 1px solid #e5edf3;
+    background: #fbfdff;
+}
+
+.contact-admin-table th,
+.contact-admin-table td {
+    padding: 14px 16px;
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.contact-admin-table th {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.contact-admin-table tbody tr {
+    border-bottom: 1px solid #eef2f7;
+}
+
+.contact-admin-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.contact-admin-table tbody tr:hover {
+    background: #fbfdff;
+}
+
+.contact-admin-name {
+    color: #102a43;
+    font-weight: 900;
+}
+
+.contact-admin-table a,
+.contact-admin-modal a {
+    color: #0b557f;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.contact-admin-table a:hover,
+.contact-admin-modal a:hover {
+    text-decoration: underline;
+}
+
+.contact-admin-message {
+    max-width: 360px;
+    color: #475569;
+    white-space: normal !important;
+}
+
+.contact-admin-status {
+    display: inline-flex;
+    width: fit-content;
+    min-height: 24px;
+    align-items: center;
+    border-radius: 999px;
+    background: #e2e8f0;
+    color: #475569;
+    font-size: 11px;
+    font-weight: 900;
+    padding: 0 10px;
+    text-transform: uppercase;
+}
+
+.contact-admin-status--new {
+    background: #fff7d1;
+    color: #8a6d00;
+}
+
+.contact-admin-status--read {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.contact-admin-status--archived {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.contact-admin-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.contact-admin-actions button {
+    display: inline-flex;
+    min-height: 34px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: 1px solid #d8e1ea;
+    border-radius: 8px;
+    background: #fff;
+    color: #172033;
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 900;
+    padding: 0 12px;
+}
+
+.contact-admin-actions button:hover {
+    border-color: #efbf04;
+    background: #fff9df;
+}
+
+.contact-admin-actions .contact-admin-action-danger {
+    border-color: #fecaca;
+    color: #b91c1c;
+}
+
+.contact-admin-actions .contact-admin-action-danger:hover {
+    background: #fff1f2;
+}
+
+.contact-admin-empty,
+.contact-admin-loading {
+    min-height: 220px;
+    color: #64748b;
+    font-weight: 800;
+    text-align: center;
+}
+
+.contact-admin-empty {
+    padding: 40px !important;
+}
+
+.contact-admin-loading {
+    display: grid;
+    place-items: center;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+}
+
+.contact-admin-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.contact-admin-page-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.contact-admin-page-controls button {
+    display: inline-flex;
+    min-width: 34px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #d8e1ea;
+    border-radius: 8px;
+    background: #fff;
+    color: #172033;
+    cursor: pointer;
+    font-weight: 900;
+    padding: 0 10px;
+}
+
+.contact-admin-page-controls button:hover:not(:disabled) {
+    border-color: #efbf04;
+    background: #fff9df;
+}
+
+.contact-admin-page-controls button:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+.contact-admin-page-controls button.is-active {
+    border-color: #efbf04;
+    background: #efbf04;
+    color: #101820;
+}
+
+.contact-admin-page-dots {
+    color: #94a3b8;
+    padding: 0 4px;
+}
+
+.contact-admin-modal-overlay,
+.contact-confirm-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.62);
+    padding: 22px;
+}
+
+.contact-admin-modal {
+    position: relative;
+    width: min(680px, 100%);
+    max-height: 88vh;
+    overflow-y: auto;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 18px 55px rgba(0, 0, 0, 0.24);
+    padding: 28px;
+}
+
+.contact-admin-modal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    background: #102a43;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 900;
+}
+
+.contact-admin-modal h2 {
+    margin: 14px 0 4px;
+    color: #102a43;
+    font-size: 26px;
+}
+
+.contact-admin-modal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 16px 0;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.contact-admin-modal p {
+    margin: 0;
+    color: #334155;
+    line-height: 1.75;
+    white-space: pre-wrap;
+}
+
+.contact-confirm-modal {
+    width: min(420px, 100%);
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 18px 55px rgba(0, 0, 0, 0.24);
+    padding: 32px 28px;
+    text-align: center;
+}
+
+.contact-confirm-modal__icon {
+    display: inline-flex;
+    width: 52px;
+    height: 52px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #fff0f0;
+    color: #e63939;
+    font-size: 28px;
+    font-weight: 900;
+}
+
+.contact-confirm-modal h3 {
+    margin: 16px 0 10px;
+    color: #102a43;
+    font-size: 23px;
+}
+
+.contact-confirm-modal p {
+    margin: 0 0 24px;
+    color: #475569;
+    line-height: 1.55;
+}
+
+.contact-confirm-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+}
+
+.contact-confirm-actions button {
+    min-width: 130px;
+    min-height: 42px;
+    border: none;
+    border-radius: 8px;
+    background: #f1f5f9;
+    color: #172033;
+    cursor: pointer;
+    font-weight: 900;
+    padding: 0 18px;
+}
+
+.contact-confirm-actions .contact-confirm-delete {
+    background: #e63939;
+    color: #fff;
+}
+
+.contact-confirm-actions button:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+@media (max-width: 980px) {
+    .contact-admin-toolbar {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .contact-admin-page {
+        padding: 0;
+    }
+
+    .contact-admin-card {
+        padding: 16px;
+    }
+
+    .contact-admin-header,
+    .contact-admin-pagination {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .contact-admin-stats,
+    .contact-admin-toolbar {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-admin-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .contact-admin-actions button,
+    .contact-admin-toolbar button {
+        width: 100%;
+    }
+
+    .contact-admin-page-controls {
+        flex-wrap: wrap;
+    }
+}

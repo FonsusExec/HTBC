@@ -79,6 +79,7 @@ export const adminMenu = [
             {type: "link", label: "Community", path: "/admin/community"},
             {type: "link", label: "About Us", path: "/admin/about-us"},
             {type: "link", label: "Testimonials", path: "/admin/testimonials"},
+            {type: "link", label: "Contact Messages", path: "/admin/contact-messages"},
         ],
     },
 ];

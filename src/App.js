@@ -56,6 +56,9 @@ import ImpactStories from "./Admin/DonationStory/ImpactStories";
 import CreateImpactStory from "./Admin/DonationStory/CreateImpactStory";
 import Dashboard from "./Admin/Dashboard/Dashboard";
 import CommunityManagement from "./Admin/Community/CommunityManagement";
+import ContactMessages from "./Admin/ContactMessages/ContactMessages";
+import AboutContent from "./Admin/AboutContent/AboutContent";
+import TestimonialsAdmin from "./Admin/Testimonials/TestimonialsAdmin";
 import "./assets/css/responsive.css";
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || "";
@@ -165,6 +168,9 @@ function App() {
                                         <Route path="create-impact-story" element={<CreateImpactStory />} />
                                         <Route path="edit-impact-story/:id" element={<CreateImpactStory />} />
                                         <Route path="community" element={<CommunityManagement />} />
+                                        <Route path="about-us" element={<AboutContent />} />
+                                        <Route path="testimonials" element={<TestimonialsAdmin />} />
+                                        <Route path="contact-messages" element={<ContactMessages />} />
                                         <Route path="*" element={<div>Admin 404 Not Found</div>} />
                                     </Route>
 
