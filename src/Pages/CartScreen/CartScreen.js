@@ -4,6 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import {useNavigate} from "react-router-dom";
 import "../CartScreen/cartScreen.css";
 import {useCart} from "../../CartContext";
+import {isDemoMode} from "../../demo/demoMode";
 
 export default function CartScreen() {
     const {cart, removeFromCart, updateQty, getCartCount, getCartTotal} = useCart();
@@ -31,6 +32,10 @@ export default function CartScreen() {
     const continueToCheckout = () => {
         if (cartItemsCount === 0) {
             toast.error("Your cart is empty!");
+            return;
+        }
+        if (isDemoMode) {
+            toast.info("Demo mode: checkout is disabled for this preview.");
             return;
         }
         navigate("/checkout");

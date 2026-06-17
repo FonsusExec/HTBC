@@ -2,6 +2,8 @@ import React, {useEffect, useMemo, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import Loading from "../../components/Loading";
+import {isDemoMode} from "../../demo/demoMode";
+import {demoNews} from "../../demo/demoData";
 import "./newsArticle.css";
 
 const fallbackImage = require("../../assets/img/htbc-new1.png");
@@ -103,6 +105,25 @@ export default function News() {
             try {
                 setLoading(true);
                 setError("");
+
+                if (isDemoMode) {
+                    const normalizedSearch = debouncedSearch.toLowerCase();
+                    const filteredNews = demoNews
+                        .filter((article) => !normalizedSearch || article.title.toLowerCase().includes(normalizedSearch) || getSummary(article).toLowerCase().includes(normalizedSearch))
+                        .sort((a, b) => {
+                            const first = new Date(a.pubDate || a.createdAt || 0);
+                            const second = new Date(b.pubDate || b.createdAt || 0);
+                            return sortOrder === "oldest" ? first - second : second - first;
+                        });
+                    const start = (currentPage - 1) * PAGE_LIMIT;
+                    const nextArticles = filteredNews.slice(start, start + PAGE_LIMIT);
+
+                    if (!isActive) return;
+                    setFeaturedArticle(nextArticles[0] || null);
+                    setArticles(nextArticles);
+                    setTotalArticles(filteredNews.length);
+                    return;
+                }
 
                 const {data} = await axios.get("/api/news", {
                     params: {

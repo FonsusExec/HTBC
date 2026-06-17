@@ -4,6 +4,8 @@ import {useNavigate, useParams} from "react-router-dom";
 import {FaArrowLeft, FaExternalLinkAlt} from "react-icons/fa";
 import Loading from "../../components/Loading";
 import CommunityComments from "../../components/CommunityComments";
+import {isDemoMode} from "../../demo/demoMode";
+import {getDemoNewsById} from "../../demo/demoData";
 import "./newsDetail.css";
 
 const fallbackImage = require("../../assets/img/htbc-new1.png");
@@ -75,6 +77,14 @@ export default function NewsDetail() {
             try {
                 setLoading(true);
                 setError("");
+
+                if (isDemoMode) {
+                    const demoArticle = getDemoNewsById(id);
+                    if (!isActive) return;
+                    setArticle(demoArticle || null);
+                    setError(demoArticle ? "" : "This demo article could not be found.");
+                    return;
+                }
 
                 const articleResponse = await axios.get(`/api/news/${id}`);
                 if (!isActive) return;

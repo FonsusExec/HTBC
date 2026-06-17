@@ -5,6 +5,8 @@ import {Link, useNavigate, useParams} from "react-router-dom";
 import {FaArrowLeft} from "react-icons/fa";
 import Loading from "../../components/Loading";
 import CommunityComments from "../../components/CommunityComments";
+import {isDemoMode} from "../../demo/demoMode";
+import {getDemoBlogById} from "../../demo/demoData";
 import "./blogDetailPage.css";
 
 const fallbackBlogImage = require("../../assets/img/htbc-blog.jpg");
@@ -77,6 +79,14 @@ export default function BlogDetail() {
             try {
                 setLoading(true);
                 setError("");
+                if (isDemoMode) {
+                    const demoPost = getDemoBlogById(id);
+                    if (!isActive) return;
+                    setPost(demoPost || null);
+                    setError(demoPost ? "" : "This demo blog post could not be found.");
+                    return;
+                }
+
                 const {data} = await axios.get(`/api/blogs/${id}`, {params: {type: "blog"}});
 
                 if (!isActive) return;

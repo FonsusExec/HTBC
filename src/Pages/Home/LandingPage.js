@@ -8,6 +8,8 @@ import Product from "../../components/Product";
 import Loading from "../../components/Loading";
 import {getProductId, getProductsFromResponse} from "../../utils/productHelpers";
 import {useCart} from "../../CartContext";
+import {isDemoMode} from "../../demo/demoMode";
+import {demoBlogs, demoImpactStories, demoNews, demoProducts, demoResources} from "../../demo/demoData";
 
 const ResourcesSection = React.lazy(() => import("../../components/ResourceSection"));
 const fallbackBlogImage = require("../../assets/img/htbc-blog.jpg");
@@ -98,6 +100,11 @@ export default function LandingPage() {
     React.useEffect(() => {
         const fetchData = async () => {
             dispatch({type: "FETCH_REQUEST"});
+            if (isDemoMode) {
+                dispatch({type: "FETCH_SUCCESS", payload: demoProducts});
+                return;
+            }
+
             try {
                 const result = await axios.get("/api/products", {params: {limit: 4}});
                 dispatch({type: "FETCH_SUCCESS", payload: getProductsFromResponse(result.data)});
@@ -115,6 +122,15 @@ export default function LandingPage() {
         const fetchLandingContent = async () => {
             setContentLoading({blog: true, news: true, resources: true, donations: true});
             setContentErrors({blog: "", news: "", resources: "", donations: ""});
+
+            if (isDemoMode) {
+                setLatestBlog(demoBlogs[0] || null);
+                setLatestNews(demoNews.slice(0, 8));
+                setResources(demoResources.slice(0, 4));
+                setImpactStories(demoImpactStories.slice(0, 4));
+                setContentLoading({blog: false, news: false, resources: false, donations: false});
+                return;
+            }
 
             const [blogResult, newsResult, resourcesResult, impactStoriesResult] = await Promise.allSettled([
                 axios.get("/api/blogs", {params: {page: 1, limit: 1, type: "blog"}}),

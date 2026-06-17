@@ -8,6 +8,8 @@ import {useCart} from "../../CartContext";
 import Loading from "../../components/Loading";
 import {FaArrowLeft, FaCheckCircle, FaMinus, FaPlus, FaShoppingBag, FaShoppingCart} from "react-icons/fa";
 import {getProductId, getProductImage, getProductName, getProductPrice, toCartItem} from "../../utils/productHelpers";
+import {isDemoMode} from "../../demo/demoMode";
+import {getDemoProductByRouteId} from "../../demo/demoData";
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -51,6 +53,12 @@ export default function ProductScreen() {
     React.useEffect(() => {
         const fetchData = async () => {
             dispatch({type: "FETCH_REQUEST"});
+            if (isDemoMode) {
+                const demoProduct = getDemoProductByRouteId(productParam);
+                dispatch(demoProduct ? {type: "FETCH_SUCCESS", payload: demoProduct} : {type: "FETCH_FAIL", payload: "This demo product could not be found."});
+                return;
+            }
+
             try {
                 const isDatabaseId = /^[a-f\d]{24}$/i.test(productParam);
                 const result = await axios.get(isDatabaseId ? `/api/products/${productParam}` : `/api/products/htbc/${productParam}`);

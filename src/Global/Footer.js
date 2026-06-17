@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import axios from "axios";
+import {isDemoMode} from "../demo/demoMode";
 import "../assets/css/footer.css";
 
 export default function Footer() {
@@ -43,6 +44,13 @@ export default function Footer() {
         try {
             setSubmitting(true);
             setStatus({type: "", message: ""});
+
+            if (isDemoMode) {
+                setStatus({type: "success", message: "Demo mode: message captured for preview only."});
+                setFormData({fullName: "", email: "", message: "", newsletter: false});
+                return;
+            }
+
             const {data} = await axios.post("/api/contact-messages", payload);
 
             setStatus({type: "success", message: data.message || "Your message has been sent."});

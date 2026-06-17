@@ -7,6 +7,8 @@ import {Link, useNavigate} from "react-router-dom";
 import {FaArrowLeft, FaBoxOpen, FaEye, FaSearch, FaShoppingCart, FaSlidersH} from "react-icons/fa";
 import {toast} from "react-toastify";
 import {getProductId, getProductImage, getProductName, getProductPrice, getProductRouteId, getProductsFromResponse, toCartItem} from "../../utils/productHelpers";
+import {isDemoMode} from "../../demo/demoMode";
+import {demoProducts} from "../../demo/demoData";
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -50,6 +52,11 @@ export default function AllProductPage() {
     React.useEffect(() => {
         const fetchData = async () => {
             dispatch({type: "FETCH_REQUEST"});
+            if (isDemoMode) {
+                dispatch({type: "FETCH_SUCCESS", payload: demoProducts});
+                return;
+            }
+
             try {
                 const result = await axios.get("/api/products", {params: {limit: 100}});
                 dispatch({type: "FETCH_SUCCESS", payload: getProductsFromResponse(result.data)});

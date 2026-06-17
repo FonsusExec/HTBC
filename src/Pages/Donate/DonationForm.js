@@ -7,6 +7,8 @@ import {toast} from "react-toastify";
 import Loading from "../../components/Loading";
 import "./donationForm.css";
 import {findDonationItemById, getDonationItemById} from "./donationItems";
+import {isDemoMode} from "../../demo/demoMode";
+import {getDemoImpactStoryById} from "../../demo/demoData";
 
 const stripePublishableKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : Promise.resolve(null);
@@ -140,6 +142,25 @@ export default function DonationForm() {
         const fetchImpactStory = async () => {
             try {
                 setDonationLoading(true);
+
+                if (isDemoMode) {
+                    const demoStory = getDemoImpactStoryById(donationId);
+                    if (isActive) {
+                        if (demoStory) {
+                            setStoryDonation({
+                                id: demoStory._id,
+                                title: demoStory.title,
+                                desc: demoStory.description,
+                                detail: demoStory.description,
+                                img: demoStory.imageUrl,
+                            });
+                        } else {
+                            setDonationError("This demo impact story could not be found.");
+                        }
+                    }
+                    return;
+                }
+
                 const {data} = await axios.get(`/api/impact-stories/${donationId}`);
 
                 if (isActive) {
@@ -174,6 +195,13 @@ export default function DonationForm() {
     useEffect(() => {
         if (!donation || !validAmount) {
             setClientSecret("");
+            return;
+        }
+
+        if (isDemoMode) {
+            setClientSecret("");
+            setIntentLoading(false);
+            setIntentError("Demo mode preview: payment submission is disabled.");
             return;
         }
 

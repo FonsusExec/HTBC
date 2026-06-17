@@ -3,6 +3,8 @@ import axios from "axios";
 import {FaCalendarAlt, FaCheckCircle, FaMapMarkerAlt, FaSortAmountDown, FaSortAmountUp, FaUsers} from "react-icons/fa";
 import {useAuth} from "../../AuthContext";
 import Loading from "../../components/Loading";
+import {isDemoMode} from "../../demo/demoMode";
+import {demoEvents} from "../../demo/demoData";
 import "./community.css";
 
 const heroImage = require("../../assets/img/htbc-commu.png");
@@ -50,6 +52,18 @@ export default function Community() {
             try {
                 setLoading(true);
                 setError("");
+
+                if (isDemoMode) {
+                    const sortedEvents = [...demoEvents].sort((a, b) => {
+                        const first = new Date(a.startDate || 0);
+                        const second = new Date(b.startDate || 0);
+                        return sort === "asc" ? first - second : second - first;
+                    });
+                    if (!isActive) return;
+                    setEvents(sortedEvents);
+                    return;
+                }
+
                 const {data} = await axios.get("/api/community/events", {params: {sort}});
                 if (!isActive) return;
                 setEvents(data.events || []);
@@ -105,6 +119,17 @@ export default function Community() {
             setSubmitting(true);
             setRsvpError("");
             setRsvpMessage("");
+
+            if (isDemoMode) {
+                const updatedEvent = {
+                    ...selectedEvent,
+                    rsvpCount: (selectedEvent.rsvpCount || 0) + 1,
+                };
+                setEvents((currentEvents) => currentEvents.map((event) => (event._id === selectedEvent._id ? updatedEvent : event)));
+                setSelectedEvent(updatedEvent);
+                setRsvpMessage("Demo RSVP saved for this preview session.");
+                return;
+            }
 
             const {data} = await axios.post(`/api/community/events/${selectedEvent._id}/rsvp`, {
                 name,

@@ -3,6 +3,8 @@ import {Link} from "react-router-dom";
 import {FaArrowRight, FaHandHoldingHeart, FaHeart} from "react-icons/fa";
 import axios from "axios";
 import Loading from "../../components/Loading";
+import {isDemoMode} from "../../demo/demoMode";
+import {demoImpactStories} from "../../demo/demoData";
 import "./donate.css";
 
 const fallbackDonateImage = require("../../assets/img/htbc-donate1.png");
@@ -33,6 +35,14 @@ export default function Donate() {
             try {
                 setLoadingStories(true);
                 setStoriesError("");
+
+                if (isDemoMode) {
+                    if (!isActive) return;
+                    setImpactStories(demoImpactStories);
+                    setTotalStories(demoImpactStories.length);
+                    return;
+                }
+
                 const {data} = await axios.get("/api/impact-stories", {
                     params: {page: 1, limit: 6},
                 });

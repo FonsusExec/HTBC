@@ -2,6 +2,8 @@ import React, {useEffect, useMemo, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import Loading from "../../components/Loading";
+import {isDemoMode} from "../../demo/demoMode";
+import {demoBlogs} from "../../demo/demoData";
 import "./blog.css";
 
 const fallbackBlogImage = require("../../assets/img/htbc-blog.jpg");
@@ -103,6 +105,16 @@ export default function Blog() {
             try {
                 setLoading(true);
                 setError("");
+
+                if (isDemoMode) {
+                    const normalizedSearch = debouncedSearch.toLowerCase();
+                    const filteredPosts = demoBlogs.filter((post) => !normalizedSearch || post.title.toLowerCase().includes(normalizedSearch) || getSummary(post).toLowerCase().includes(normalizedSearch));
+                    const start = (currentPage - 1) * PAGE_LIMIT;
+                    if (!isActive) return;
+                    setPosts(filteredPosts.slice(start, start + PAGE_LIMIT));
+                    setTotalPosts(filteredPosts.length);
+                    return;
+                }
 
                 const {data} = await axios.get("/api/blogs", {
                     params: {

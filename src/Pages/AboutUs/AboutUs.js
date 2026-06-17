@@ -1,5 +1,7 @@
 import React, {useEffect, useMemo, useState} from "react";
 import axios from "axios";
+import {isDemoMode} from "../../demo/demoMode";
+import {demoAbout} from "../../demo/demoData";
 import "./aboutUs.css";
 
 const fallbackTeamMembers = [
@@ -45,6 +47,14 @@ export default function About() {
 
         const fetchAboutContent = async () => {
             try {
+                if (isDemoMode) {
+                    setAboutPage(demoAbout.page);
+                    setTeamMembers(demoAbout.teamMembers);
+                    setTestimonials(demoAbout.testimonials);
+                    setActiveTestimonial(0);
+                    return;
+                }
+
                 const {data} = await axios.get("/api/about");
 
                 if (!isActive) return;

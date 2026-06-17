@@ -3,6 +3,8 @@ import axios from "axios";
 import {FaRegCommentDots, FaRegThumbsDown, FaRegThumbsUp, FaReply} from "react-icons/fa";
 import {useAuth} from "../AuthContext";
 import Loading from "./Loading";
+import {isDemoMode} from "../demo/demoMode";
+import {getDemoComments} from "../demo/demoData";
 import "./communityComments.css";
 
 const getReactionKey = (commentId) => `htbc-community-comment-reaction-${commentId}`;
@@ -66,6 +68,15 @@ export default function CommunityComments({contentType, contentId, title = "Disc
                 setLoading(true);
                 setError("");
 
+                if (isDemoMode) {
+                    const nextComments = getDemoComments(contentType, contentId);
+                    if (!isActive) return;
+                    setComments(nextComments);
+                    setReactedComments({});
+                    onCountChange?.(countComments(nextComments));
+                    return;
+                }
+
                 const {data} = await axios.get("/api/community/comments", {
                     params: {contentType, contentId},
                 });
@@ -124,6 +135,11 @@ export default function CommunityComments({contentType, contentId, title = "Disc
             setError("");
             setMessage("");
 
+            if (isDemoMode) {
+                setMessage("Demo mode: comments are preview-only and are not saved.");
+                return;
+            }
+
             await axios.post("/api/community/comments", {
                 contentType,
                 contentId,
@@ -164,6 +180,26 @@ export default function CommunityComments({contentType, contentId, title = "Disc
         try {
             setReactingId(`${commentId}-${reaction}`);
             setError("");
+
+            if (isDemoMode) {
+                const updateLocalReaction = (items = []) =>
+                    items.map((comment) => {
+                        if (comment._id === commentId) {
+                            return {
+                                ...comment,
+                                likes: reaction === "like" ? (comment.likes || 0) + 1 : comment.likes || 0,
+                                dislikes: reaction === "dislike" ? (comment.dislikes || 0) + 1 : comment.dislikes || 0,
+                            };
+                        }
+
+                        return {...comment, replies: updateLocalReaction(comment.replies || [])};
+                    });
+
+                setComments((currentComments) => updateLocalReaction(currentComments));
+                setReactedComments((currentReactions) => ({...currentReactions, [commentId]: reaction}));
+                saveStoredReaction(commentId, reaction);
+                return;
+            }
 
             const {data} = await axios.patch(`/api/community/comments/${commentId}/reaction`, {reaction});
             setComments((currentComments) => updateCommentTree(currentComments, data.comment));
